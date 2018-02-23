@@ -1,7 +1,7 @@
 package onethreeseven.trajsuitePlugin.view;
 
 
-import onethreeseven.trajsuitePlugin.model.AbstractTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 
 /**
  * Supplies menus, which TrajSuite access through a service loader
@@ -18,6 +18,6 @@ public interface MenuSupplier {
      * @param populator An instance of class that allows adding items to the menu bar.
      * @param program An instance of the TrajSuite program that implementor can expect to be passed.
      */
-    void supplyMenus(AbstractMenuBarPopulator populator, AbstractTrajSuiteProgram program);
+    void supplyMenus(AbstractMenuBarPopulator populator, BaseTrajSuiteProgram program);
 
 }

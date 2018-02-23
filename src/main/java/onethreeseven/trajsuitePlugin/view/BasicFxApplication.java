@@ -5,7 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import onethreeseven.trajsuitePlugin.model.AbstractTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,7 +22,10 @@ public abstract class BasicFxApplication extends Application {
     public void start(Stage stage) {
 
         try{
-            AbstractTrajSuiteProgram program = preStart(stage);
+            BaseTrajSuiteProgram program = preStart(stage);
+
+            LayersBasedEntitySupplier.setLayers(program.getLayers());
+
             Parent mainView = loadMainView(program);
 
             //pass view to stage
@@ -35,7 +39,7 @@ public abstract class BasicFxApplication extends Application {
         }
     }
 
-    protected Parent loadMainView(AbstractTrajSuiteProgram program) throws IOException {
+    protected Parent loadMainView(BaseTrajSuiteProgram program) throws IOException {
         //call fxml
         URL fxmlView = null;
         try {
@@ -60,11 +64,11 @@ public abstract class BasicFxApplication extends Application {
         return loader.load();
     }
 
-    protected Object initViewController(AbstractTrajSuiteProgram program){
+    protected Object initViewController(BaseTrajSuiteProgram program){
         return new MainViewController(program);
     }
 
-    protected abstract AbstractTrajSuiteProgram preStart(Stage stage);
+    protected abstract BaseTrajSuiteProgram preStart(Stage stage);
 
     public abstract String getTitle();
 

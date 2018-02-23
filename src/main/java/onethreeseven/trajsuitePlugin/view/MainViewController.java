@@ -5,7 +5,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import onethreeseven.trajsuitePlugin.model.AbstractTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
@@ -16,9 +16,9 @@ import java.util.ServiceLoader;
  */
 public class MainViewController {
 
-    protected final AbstractTrajSuiteProgram program;
+    protected final BaseTrajSuiteProgram program;
 
-    protected MainViewController(AbstractTrajSuiteProgram program) {
+    protected MainViewController(BaseTrajSuiteProgram program) {
         this.program = program;
     }
 

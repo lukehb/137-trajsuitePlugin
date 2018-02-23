@@ -1,6 +1,6 @@
 package onethreeseven.trajsuitePlugin.view;
 
-import onethreeseven.trajsuitePlugin.model.AbstractTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 
 /**
  * Some base menus all builds of TrajSuite will have.
@@ -8,7 +8,7 @@ import onethreeseven.trajsuitePlugin.model.AbstractTrajSuiteProgram;
  */
 public class BaseMenuSupplier implements MenuSupplier {
     @Override
-    public void supplyMenus(AbstractMenuBarPopulator populator, AbstractTrajSuiteProgram program) {
+    public void supplyMenus(AbstractMenuBarPopulator populator, BaseTrajSuiteProgram program) {
 
         //File menu
         TrajSuiteMenu fileMenu = new TrajSuiteMenu("File");
