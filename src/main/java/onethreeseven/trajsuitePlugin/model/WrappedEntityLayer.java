@@ -1,6 +1,8 @@
 package onethreeseven.trajsuitePlugin.model;
 
 
+import java.util.Iterator;
+
 /**
  * A layer of {@link WrappedEntity}
  * @author Luke Bermingham
@@ -15,5 +17,8 @@ public class WrappedEntityLayer<T> extends EntityLayer<WrappedEntity<T>> {
         return this.entities.get(id);
     }
 
-
+    @Override
+    public Iterator<WrappedEntity<T>> iterator() {
+        return super.iterator();
+    }
 }

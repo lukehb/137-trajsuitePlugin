@@ -1,7 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Supplies entities from the {@link Layers} object.
@@ -22,6 +21,24 @@ public class LayersBasedEntitySupplier implements EntitySupplier {
             models.add(wrappedEntity.model);
         }
         return models;
+    }
+
+    @Override
+    public Map<String, Object> supplyAllSelected() {
+
+        Map<String, Object> selectedEntities = new HashMap<>();
+
+        if(layers != null){
+            for (WrappedEntityLayer layer : layers) {
+                for (Object item : layer) {
+                    WrappedEntity wrappedEntity = (WrappedEntity) item;
+                    if (wrappedEntity.isSelected()) {
+                        selectedEntities.put(wrappedEntity.getId(), wrappedEntity.model);
+                    }
+                }
+            }
+        }
+        return selectedEntities;
     }
 
     public static void setLayers(Layers layers) {
