@@ -9,8 +9,8 @@ import java.util.Iterator;
  */
 public class WrappedEntityLayer<T> extends EntityLayer<WrappedEntity<T>> {
 
-    public WrappedEntityLayer(String layerName) {
-        super(layerName);
+    public WrappedEntityLayer(String layerName, Class<T> modelType) {
+        super(layerName, modelType);
     }
 
     public WrappedEntity<T> get(String id){
@@ -20,5 +20,10 @@ public class WrappedEntityLayer<T> extends EntityLayer<WrappedEntity<T>> {
     @Override
     public Iterator<WrappedEntity<T>> iterator() {
         return super.iterator();
+    }
+
+    @Override
+    public WrappedEntity<T> remove(String id) {
+        return super.remove(id);
     }
 }

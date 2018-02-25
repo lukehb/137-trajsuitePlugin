@@ -4,10 +4,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
-
+import onethreeseven.trajsuitePlugin.view.controller.MainViewController;
 import java.io.IOException;
 import java.net.URL;
 
@@ -32,6 +35,9 @@ public abstract class BasicFxApplication extends Application {
             stage.setTitle(getTitle());
             stage.setScene(new Scene(mainView, getStartWidth(), getStartHeight()));
             stage.show();
+
+            //start layers in its own stage here
+            ViewUtil.showEntityLayersWindow(program.getLayers(), stage);
 
         }catch (Exception e){
             System.err.println("Error in pre-start of application");

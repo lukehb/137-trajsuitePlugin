@@ -16,7 +16,14 @@ public class BaseMenuSupplier implements MenuSupplier {
         fileMenu.addChild(new TrajSuiteMenuItem("Exit",
                 ()-> program.getCLI().doCommand(new String[]{"exit"})));
 
+        //View menu
+        TrajSuiteMenu viewMenu = new TrajSuiteMenu("View");
+        //View >> Entity Layers
+        viewMenu.addChild(new TrajSuiteMenuItem("Entity Layers",
+                ()-> ViewUtil.showEntityLayersWindow(program.getLayers(), null)));
+
         populator.addMenu(fileMenu);
+        populator.addMenu(viewMenu);
 
     }
 }

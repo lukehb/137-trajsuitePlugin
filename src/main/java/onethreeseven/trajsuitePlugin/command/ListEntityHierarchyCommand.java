@@ -80,12 +80,12 @@ public class ListEntityHierarchyCommand extends CLICommand {
     private static final String entityFmt = "    %s%s";
 
     private String format(Entity entity){
-        String selectedSymbol = entity.isSelected() ? "*" : "";
+        String selectedSymbol = entity.isSelectedProperty().get() ? "*" : "";
         return String.format(entityFmt, entity.toString(), selectedSymbol);
     }
 
     private String format(EntityLayer layer){
-        String selectedSymbol = layer.isSelected() ? "*" : "";
+        String selectedSymbol = layer.isSelectedProperty().get() ? "*" : "";
         return String.format(layerFmt, layer.getLayerName(), selectedSymbol);
     }
 

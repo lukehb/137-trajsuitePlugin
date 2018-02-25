@@ -1,5 +1,7 @@
 package onethreeseven.trajsuitePlugin.model;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import onethreeseven.trajsuitePlugin.util.IdGenerator;
 import java.util.*;
 
@@ -9,6 +11,7 @@ import java.util.*;
  */
 public class Layers implements Iterable<WrappedEntityLayer> {
 
+    private ReadOnlyObjectWrapper<WrappedEntity> entityChanged = new ReadOnlyObjectWrapper<>();
 
     /**
      * Layers are per class type.
@@ -31,6 +34,9 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         }
         layer.add(entity);
 
+        //update property for the listeners
+        entityChanged.setValue(entity);
+
         return entity;
     }
 
@@ -38,8 +44,8 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         return this.add(IdGenerator.nextId(), model);
     }
 
-    private WrappedEntityLayer newEntityLayer(Class modelType){
-        return new WrappedEntityLayer(modelType.getSimpleName());
+    private <T> WrappedEntityLayer<T> newEntityLayer(Class<T> modelType){
+        return new WrappedEntityLayer<>(modelType.getSimpleName(), modelType);
     }
 
     /**
@@ -100,4 +106,65 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         return this.allLayers.values().iterator();
     }
 
+    /**
+     * Removes an entity from a layer, if it exists.
+     * Note, if removing the entity empties a layer, the layer is removed too.
+     * @param modelType The type of the entity.
+     * @param id The id of the entity.
+     * @param <T> The type of the entity.
+     * @return True if the entity was removed, otherwise, false.
+     */
+    public <T> boolean remove(Class<T> modelType, String id){
+        WrappedEntityLayer layer = allLayers.get(modelType);
+        if(layer != null){
+            WrappedEntity toRemove = layer.get(id);
+            return remove(toRemove);
+        }
+        return false;
+    }
+
+    /**
+     * Removes an entity from a layer, if it exists.
+     * Note, if removing the entity empties a layer, the layer is removed too.
+     * @param entity The entity to remove.
+     * @return True if the entity was removed, otherwise, false.
+     */
+    public boolean remove(WrappedEntity entity){
+        Class modelType = entity.model.getClass();
+        WrappedEntityLayer layer = allLayers.get(entity.model.getClass());
+        if(layer != null){
+            WrappedEntity removedEntity = layer.remove(entity.getId());
+            boolean removed = removedEntity != null;
+            if(removed){
+                //remove the layer too if it is now empty
+                if(layer.size() == 0){
+                    allLayers.remove(modelType);
+                }
+                //let the listeners of this property know
+                entityChanged.set(removedEntity);
+            }
+            return removed;
+        }
+        return false;
+    }
+
+    public boolean removeLayer(Class modelType){
+        WrappedEntityLayer layer = this.allLayers.get(modelType);
+        if(layer != null){
+            boolean removed = this.allLayers.remove(modelType) != null;
+            if(removed){
+                if(layer.size() > 0){
+                    entityChanged.set((WrappedEntity) layer.iterator().next());
+                }else{
+                    entityChanged.set(null);
+                }
+            }
+            return removed;
+        }
+        return false;
+    }
+
+    public ReadOnlyObjectProperty<WrappedEntity> entityChangedProperty() {
+        return entityChanged.getReadOnlyProperty();
+    }
 }

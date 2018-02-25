@@ -1,4 +1,4 @@
-package onethreeseven.trajsuitePlugin.view;
+package onethreeseven.trajsuitePlugin.view.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
@@ -6,6 +6,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
+import onethreeseven.trajsuitePlugin.view.AbstractMenuBarPopulator;
+import onethreeseven.trajsuitePlugin.view.MenuSupplier;
+import onethreeseven.trajsuitePlugin.view.TrajSuiteMenu;
+import onethreeseven.trajsuitePlugin.view.TrajSuiteMenuItem;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
@@ -18,7 +22,7 @@ public class MainViewController {
 
     protected final BaseTrajSuiteProgram program;
 
-    protected MainViewController(BaseTrajSuiteProgram program) {
+    public MainViewController(BaseTrajSuiteProgram program) {
         this.program = program;
     }
 

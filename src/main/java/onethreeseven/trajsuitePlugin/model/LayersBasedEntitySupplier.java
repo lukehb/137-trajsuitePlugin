@@ -32,7 +32,7 @@ public class LayersBasedEntitySupplier implements EntitySupplier {
             for (WrappedEntityLayer layer : layers) {
                 for (Object item : layer) {
                     WrappedEntity wrappedEntity = (WrappedEntity) item;
-                    if (wrappedEntity.isSelected()) {
+                    if (wrappedEntity.isSelectedProperty().get()) {
                         selectedEntities.put(wrappedEntity.getId(), wrappedEntity.model);
                     }
                 }
