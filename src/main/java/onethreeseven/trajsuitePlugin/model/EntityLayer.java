@@ -1,18 +1,11 @@
 package onethreeseven.trajsuitePlugin.model;
 
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
-
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -41,7 +34,7 @@ public class EntityLayer<T extends Entity> implements Selectable, Iterable<T> {
         });
 
         //setup binding so layer selection is always determined by children
-        isSelected.bind(new IsLayerSelectedBinding().asObject());
+        isSelected.bind(new AllSameBooleanBinding<>(true, entities, Selectable::isSelectedProperty));
 
     }
 
@@ -92,39 +85,6 @@ public class EntityLayer<T extends Entity> implements Selectable, Iterable<T> {
     }
 
 
-    private class IsLayerSelectedBinding extends BooleanBinding{
 
-        IsLayerSelectedBinding(){
-            EntityLayer.this.entities.addListener((MapChangeListener<String, T>) change -> refreshBinding());
-        }
-
-        @Override
-        protected boolean computeValue() {
-            boolean isVisible = true;
-            for (T entity : entities.values()) {
-                if(!entity.isSelectedProperty().get()){
-                    isVisible = false;
-                    break;
-                }
-            }
-            return isVisible;
-        }
-
-        private void refreshBinding() {
-            //unbind all selected properties
-            for (T entity : entities.values()) {
-                super.unbind(entity.isSelectedProperty());
-            }
-
-            //bind all selected properties
-            for (T entity : entities.values()) {
-                super.bind(entity.isSelectedProperty());
-            }
-            //forces recalculation
-            this.invalidate();
-        }
-
-
-    }
 
 }
