@@ -1,6 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
  * Entities/layers that need their visibility toggled should implement this.
@@ -8,6 +8,6 @@ import javafx.beans.property.BooleanProperty;
  */
 public interface Visible {
 
-    BooleanProperty isVisibleProperty();
+    ReadOnlyBooleanProperty isVisibleProperty();
 
 }

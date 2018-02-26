@@ -1,9 +1,7 @@
 package onethreeseven.trajsuitePlugin.command;
 
 import onethreeseven.jclimod.CLICommand;
-import onethreeseven.trajsuitePlugin.model.Entity;
-import onethreeseven.trajsuitePlugin.model.EntityLayer;
-import onethreeseven.trajsuitePlugin.model.Layers;
+import onethreeseven.trajsuitePlugin.model.*;
 
 /**
  * Command to list entities.
@@ -45,7 +43,7 @@ public class ListEntityHierarchyCommand extends CLICommand {
     @Override
     protected boolean runImpl() {
         boolean listedSomething = false;
-        for (EntityLayer layer : layers) {
+        for (WrappedEntityLayer layer : layers) {
             System.out.println(format(layer));
             for (Object obj : layer) {
                 if(obj instanceof Entity){
@@ -84,7 +82,7 @@ public class ListEntityHierarchyCommand extends CLICommand {
         return String.format(entityFmt, entity.toString(), selectedSymbol);
     }
 
-    private String format(EntityLayer layer){
+    private String format(WrappedEntityLayer layer){
         String selectedSymbol = layer.isSelectedProperty().get() ? "*" : "";
         return String.format(layerFmt, layer.getLayerName(), selectedSymbol);
     }

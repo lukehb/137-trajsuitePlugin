@@ -43,6 +43,9 @@ public abstract class BasicFxApplication extends Application {
             System.err.println("Error in pre-start of application");
             e.printStackTrace();
         }
+
+        afterStart(stage);
+
     }
 
     protected Parent loadMainView(BaseTrajSuiteProgram program) throws IOException {
@@ -69,6 +72,8 @@ public abstract class BasicFxApplication extends Application {
 
         return loader.load();
     }
+
+    protected void afterStart(Stage stage){};
 
     protected Object initViewController(BaseTrajSuiteProgram program){
         return new MainViewController(program);

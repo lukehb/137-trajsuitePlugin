@@ -1,9 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import java.util.HashMap;
@@ -13,29 +10,16 @@ import java.util.Iterator;
  * A layer of {@link Entity}
  * @author Luke Bermingham
  */
-public class EntityLayer<T extends Entity> implements Selectable, Iterable<T> {
+public class EntityLayer<T extends Entity> implements Iterable<T> {
 
     protected final ObservableMap<String, T> entities;
     private final Class modelType;
-    private final SimpleBooleanProperty isSelected;
     private String layerName;
 
     public EntityLayer(String layerName, Class modelType){
         this.entities = FXCollections.observableMap(new HashMap<>());
         this.modelType = modelType;
-        this.isSelected = new ReadOnlyBooleanWrapper(false);
         this.layerName = layerName;
-
-        //setup selection change listener, so when layer changes, so do the children
-        isSelected.addListener((observable, oldValue, newValue) -> {
-            for (Entity entity : EntityLayer.this) {
-                entity.isSelectedProperty().setValue(newValue);
-            }
-        });
-
-        //setup binding so layer selection is always determined by children
-        isSelected.bind(new AllSameBooleanBinding<>(true, entities, Selectable::isSelectedProperty));
-
     }
 
     public void add(T entity){
@@ -72,19 +56,5 @@ public class EntityLayer<T extends Entity> implements Selectable, Iterable<T> {
     public Class<T> getModelType() {
         return modelType;
     }
-
-    @Override
-    public BooleanProperty isSelectedProperty() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean allSelected){
-        for (T entity : entities.values()) {
-            entity.isSelectedProperty().set(allSelected);
-        }
-    }
-
-
-
 
 }

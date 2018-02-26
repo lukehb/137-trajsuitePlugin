@@ -12,7 +12,7 @@ public class EntityLayerTest {
     @Test
     public void testAddAndChangeSelection() {
 
-        EntityLayer<WrappedEntity<String>> layer = new EntityLayer<>("Mock", String.class);
+        WrappedEntityLayer<String> layer = new WrappedEntityLayer<>("Mock", String.class);
 
         WrappedEntity<String> lerry = new WrappedEntity<>("Larry");
         lerry.isSelectedProperty().set(true);
@@ -28,13 +28,14 @@ public class EntityLayerTest {
         //layer should be selected
         Assert.assertTrue(layer.isSelectedProperty().getValue());
 
-
+        //deselect lerry
         lerry.isSelectedProperty().set(false);
 
-        //layer should be deselected now that lerry is not selected
-        Assert.assertTrue(!layer.isSelectedProperty().get());
+        //layer should still be selected even though lerry is not selected
+        Assert.assertTrue(layer.isSelectedProperty().get());
 
-        layer.setSelected(false);
+        //deselect all
+        layer.selectAll(false);
 
         //layer should be deselected now
         Assert.assertTrue(!layer.isSelectedProperty().get());
@@ -43,6 +44,12 @@ public class EntityLayerTest {
         Assert.assertTrue(!lerry.isSelectedProperty().get());
         Assert.assertTrue(!curly.isSelectedProperty().get());
         Assert.assertTrue(!moe.isSelectedProperty().get());
+
+        //lerry is selected
+        lerry.isSelectedProperty().set(true);
+
+        //layer should now be selected
+        Assert.assertTrue(layer.isSelectedProperty().get());
 
     }
 

@@ -11,16 +11,16 @@ import java.util.function.Function;
  * Checks if all boolean properties in a map of some type T are the same.
  * @author Luke Bermingham
  */
-public class AllSameBooleanBinding<T> extends BooleanBinding {
+public class AnyMatchingBooleanBinding<T> extends BooleanBinding {
 
     private final ObservableMap<?, T> map;
-    private final boolean sameValue;
+    private final boolean matchValue;
     private final Function<T, BooleanProperty> propertyEvaluator;
 
-    public AllSameBooleanBinding(boolean sameValue, ObservableMap<?, T> map, Function<T, BooleanProperty> propertyEvaluator) {
+    public AnyMatchingBooleanBinding(boolean matchValue, ObservableMap<?, T> map, Function<T, BooleanProperty> propertyEvaluator) {
 
         this.map = map;
-        this.sameValue = sameValue;
+        this.matchValue = matchValue;
         this.propertyEvaluator = propertyEvaluator;
 
         map.addListener((MapChangeListener<Object, T>) change -> {
@@ -33,22 +33,24 @@ public class AllSameBooleanBinding<T> extends BooleanBinding {
     protected boolean computeValue() {
         for (T entity : map.values()) {
             BooleanProperty property = propertyEvaluator.apply(entity);
-            if(property.get() != sameValue){
-                return false;
+            if(property.get() == matchValue){
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private void refreshBinding() {
         //unbind all properties
         for (T entity : map.values()) {
-            super.unbind(propertyEvaluator.apply(entity));
+            BooleanProperty property = propertyEvaluator.apply(entity);
+            super.unbind(property);
         }
 
         //bind all properties
         for (T entity : map.values()) {
-            super.bind(propertyEvaluator.apply(entity));
+            BooleanProperty property = propertyEvaluator.apply(entity);
+            super.bind(property);
         }
         //forces recalculation
         this.invalidate();

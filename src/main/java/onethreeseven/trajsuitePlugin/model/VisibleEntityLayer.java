@@ -1,7 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 
 /**
  * A {@link WrappedEntityLayer} that can toggle its visibility.
@@ -11,23 +10,14 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visible {
 
-    private final SimpleBooleanProperty isVisible;
+    private final ReadOnlyBooleanWrapper isVisible;
 
-    public VisibleEntityLayer(String layerName, Class<T> modelType) {
+    public VisibleEntityLayer(String layerName, Class<T> modelType, boolean isVisible) {
         super(layerName, modelType);
-        this.isVisible = new SimpleBooleanProperty(true);
-
-        //setup selection change listener, so when layer changes, so do the children
-        this.isVisible.addListener((observable, oldValue, newValue) -> {
-            for (Entity entity : this) {
-                if(entity instanceof VisibleEntity){
-                    ((VisibleEntity) entity).isVisibleProperty().set(newValue);
-                }
-            }
-        });
+        this.isVisible = new ReadOnlyBooleanWrapper(isVisible);
 
         //setup binding so layer selection is always determined by children
-        this.isVisible.bind(new AllSameBooleanBinding<>(false, entities, tWrappedEntity -> {
+        this.isVisible.bind(new AnyMatchingBooleanBinding<>(true, entities, tWrappedEntity -> {
             if(tWrappedEntity instanceof VisibleEntity){
                 return ((VisibleEntity) tWrappedEntity).isVisibleProperty();
             }
@@ -36,10 +26,18 @@ public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visi
     }
 
     @Override
-    public BooleanProperty isVisibleProperty() {
-        return isVisible;
+    public ReadOnlyBooleanProperty isVisibleProperty() {
+        return isVisible.getReadOnlyProperty();
     }
 
+    @Override
+    public void add(WrappedEntity<T> entity) {
 
+        if(!(entity instanceof VisibleEntity)){
+            throw new IllegalArgumentException("Entities of the visible entity layer must be VisibleEntities, " +
+                    "got passed: " + entity.getClass().getSimpleName());
+        }
 
+        super.add(entity);
+    }
 }

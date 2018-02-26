@@ -2,6 +2,8 @@ package onethreeseven.trajsuitePlugin.model;
 
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import onethreeseven.trajsuitePlugin.util.IdGenerator;
 
@@ -11,9 +13,8 @@ import onethreeseven.trajsuitePlugin.util.IdGenerator;
  */
 public class WrappedEntity<T> implements Entity, Selectable {
 
-
     protected final T model;
-    private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty isSelected;
     private final String id;
 
     public WrappedEntity(T model){
@@ -23,6 +24,7 @@ public class WrappedEntity<T> implements Entity, Selectable {
     public WrappedEntity(String id, T model){
         this.id = id;
         this.model = model;
+        this.isSelected = new SimpleBooleanProperty(false);
     }
 
     public T getModel(){

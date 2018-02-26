@@ -1,6 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
  * Whether or not the thing is selected.
@@ -8,6 +8,6 @@ import javafx.beans.property.BooleanProperty;
  */
 public interface Selectable {
 
-    BooleanProperty isSelectedProperty();
+    ReadOnlyBooleanProperty isSelectedProperty();
 
 }

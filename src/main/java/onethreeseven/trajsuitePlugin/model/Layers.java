@@ -24,7 +24,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     }
 
     public <T> WrappedEntity<T> add(String id, T model){
-        WrappedEntity<T> entity = new WrappedEntity<>(id, model);
+        VisibleEntity<T> entity = new VisibleEntity<>(id, model, true);
         Class<?> modelType = model.getClass();
         WrappedEntityLayer layer = allLayers.get(modelType);
 
@@ -45,7 +45,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     }
 
     private <T> WrappedEntityLayer<T> newEntityLayer(Class<T> modelType){
-        return new WrappedEntityLayer<>(modelType.getSimpleName(), modelType);
+        return new VisibleEntityLayer<>(modelType.getSimpleName(), modelType, true);
     }
 
     /**
