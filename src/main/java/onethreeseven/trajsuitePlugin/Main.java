@@ -50,10 +50,6 @@ public class Main extends BasicFxApplication {
     @Override
     protected void afterStart(Stage stage) {
 
-        Parent parentNode = stage.getScene().getRoot();
-        if(parentNode instanceof BorderPane){
-            ((BorderPane) parentNode).setBottom(new VisibilityWidget(true));
-        }
 
     }
 }

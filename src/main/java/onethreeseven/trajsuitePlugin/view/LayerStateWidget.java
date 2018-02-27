@@ -54,7 +54,7 @@ public class LayerStateWidget extends ItemStateWidget {
 
     @Override
     public void removeFromLayers(Layers layers) {
-        layers.removeLayer(layer.getModelType());
+        layers.removeLayer(layer.getLayerName());
     }
 
     @Override

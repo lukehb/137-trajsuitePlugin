@@ -2,6 +2,8 @@ package onethreeseven.trajsuitePlugin.model;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import onethreeseven.trajsuitePlugin.view.AnyMatchingBooleanBinding;
+
 import java.util.Iterator;
 
 /**

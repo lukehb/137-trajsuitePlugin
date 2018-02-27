@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
-
 /**
  * Tests for {@link Layers}
  * @author Luke Bermingham
@@ -40,12 +38,13 @@ public class LayersTest {
     public void testGetLayersByType() {
 
         final Layers layers = new Layers();
+        final String strLayerName = "String Layer";
 
-        WrappedEntity<String> entityStr1 = layers.add("1", "Yo");
-        WrappedEntity<String> entityStr2 = layers.add("2", "How's");
-        WrappedEntity<String> entityStr3 = layers.add("3", "It?");
+        WrappedEntity<String> entityStr1 = layers.add(strLayerName, "1", "Yo");
+        WrappedEntity<String> entityStr2 = layers.add(strLayerName, "2", "How's");
+        WrappedEntity<String> entityStr3 = layers.add(strLayerName, "3", "It?");
 
-        WrappedEntityLayer<String> strLayer = layers.getLayerByType(String.class);
+        WrappedEntityLayer<String> strLayer = layers.getLayer(strLayerName, String.class);
 
         Assert.assertTrue(strLayer.get("1").model.equals(entityStr1.model));
         Assert.assertTrue(strLayer.get("2").model.equals(entityStr2.model));

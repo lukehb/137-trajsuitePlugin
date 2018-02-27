@@ -1,4 +1,4 @@
-package onethreeseven.trajsuitePlugin.model;
+package onethreeseven.trajsuitePlugin.view;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;

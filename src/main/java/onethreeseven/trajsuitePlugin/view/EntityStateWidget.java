@@ -34,7 +34,7 @@ public class EntityStateWidget extends ItemStateWidget {
 
     @Override
     public void removeFromLayers(Layers layers) {
-        layers.remove(entity);
+        layers.remove(entity.getId(), entity.getModel().getClass());
     }
 
     @Override

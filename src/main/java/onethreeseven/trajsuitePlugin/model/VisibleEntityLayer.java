@@ -1,6 +1,7 @@
 package onethreeseven.trajsuitePlugin.model;
 
 import javafx.beans.property.*;
+import onethreeseven.trajsuitePlugin.view.AnyMatchingBooleanBinding;
 
 /**
  * A {@link WrappedEntityLayer} that can toggle its visibility.

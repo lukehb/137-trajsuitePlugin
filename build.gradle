@@ -19,6 +19,7 @@ allprojects {
 }
 
 repositories {
+    maven{url 'https://dl.bintray.com/lukehb/137-geo'} //geography module hosted on bintray
     mavenCentral()
     mavenLocal()
 }
@@ -26,6 +27,9 @@ repositories {
 dependencies {
     //jcli
     compile group: 'onethreeseven', name: 'jclimod', version: '0.0.1-SNAPSHOT'
+
+    //geo
+    compile group: 'onethreeseven', name: 'geo', version: '0.0.4'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

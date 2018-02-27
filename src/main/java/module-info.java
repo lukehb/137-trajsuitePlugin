@@ -5,8 +5,10 @@ import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
 open module onethreeseven.trajsuitePlugin {
 
     requires transitive onethreeseven.jclimod;
+    requires transitive onethreeseven.geo;
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
+    requires java.prefs;
     requires java.desktop;
     requires javafx.swing;
     requires jcommander;
@@ -26,6 +28,8 @@ open module onethreeseven.trajsuitePlugin {
     exports onethreeseven.trajsuitePlugin.view;
     exports onethreeseven.trajsuitePlugin.model;
     exports onethreeseven.trajsuitePlugin.util;
+    exports onethreeseven.trajsuitePlugin.graphics;
+    exports onethreeseven.trajsuitePlugin.settings;
 
     //for javafx to work
     exports onethreeseven.trajsuitePlugin;
