@@ -2,21 +2,11 @@ package onethreeseven.trajsuitePlugin.view;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
-import javafx.scene.control.skin.ButtonSkin;
-import javafx.scene.control.skin.LabelSkin;
 import javafx.scene.control.skin.LabeledSkinBase;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import onethreeseven.trajsuitePlugin.model.Visible;
 
 
 /**

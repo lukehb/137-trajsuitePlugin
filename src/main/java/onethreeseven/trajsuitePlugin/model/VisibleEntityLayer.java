@@ -40,4 +40,13 @@ public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visi
 
         super.add(entity);
     }
+
+    public void setAllVisible(boolean allVisible){
+        for (WrappedEntity<T> wrappedEntity : entities.values()) {
+            if(wrappedEntity instanceof VisibleEntity){
+                ((VisibleEntity) wrappedEntity).isVisibleProperty().set(allVisible);
+            }
+        }
+    }
+
 }
