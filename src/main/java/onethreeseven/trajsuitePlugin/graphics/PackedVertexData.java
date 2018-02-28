@@ -59,7 +59,7 @@ public class PackedVertexData {
      * @param verts Total number of vertices when all vertices are eventually inserted.
      * @param vertexDataTypes Which vertex data types: vertex, color, normal etc.?
      */
-    protected PackedVertexData(int verts, Types[] vertexDataTypes) {
+    public PackedVertexData(int verts, Types[] vertexDataTypes) {
         this.nVerts = verts;
         int total = 0;
         for (Types valuesPerDataType : vertexDataTypes) {
@@ -77,7 +77,7 @@ public class PackedVertexData {
      * @param toAdd the data to add
      * @return whether adding was successful
      */
-    protected boolean add(double toAdd) {
+    public boolean add(double toAdd) {
         if (data.position() < data.limit()) {
             this.data.put(toAdd);
             return true;

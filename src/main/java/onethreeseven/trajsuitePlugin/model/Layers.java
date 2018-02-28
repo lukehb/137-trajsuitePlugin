@@ -67,9 +67,10 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     /**
      * Get the first layer with the specified model type.
      * @param modelType The specified model type.
+     * @param <T> The type of model.
      * @return A layer of the specified model type, or null, if no such layer exists.
      */
-    public WrappedEntityLayer getFirstLayerOfType(Class modelType){
+    public <T> WrappedEntityLayer<T> getFirstLayerOfType(Class<T> modelType){
         for (WrappedEntityLayer layer : allLayers.values()) {
             if(layer.getModelType().equals(modelType)){
                 return layer;
