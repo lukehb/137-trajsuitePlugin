@@ -1,7 +1,6 @@
 package onethreeseven.trajsuitePlugin.model;
 
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import onethreeseven.trajsuitePlugin.util.IdGenerator;
 import java.util.*;
 
@@ -19,7 +18,7 @@ import java.util.*;
  */
 public class Layers implements Iterable<WrappedEntityLayer> {
 
-    protected ReadOnlyObjectWrapper<WrappedEntity> entityChanged = new ReadOnlyObjectWrapper<>();
+    protected final Collection<Runnable> entityChangedListeners;
 
     /**
      * Layers are per class type.
@@ -29,6 +28,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
 
     public Layers(){
         this.allLayers = new HashMap<>();
+        this.entityChangedListeners = new ArrayList<>();
     }
 
     public <T> WrappedEntityLayer<T> getLayer(String layername, Class<T> modelType) {
@@ -55,7 +55,13 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         return new ArrayList<>();
     }
 
-    private <T> Collection<T> getAllModelsIn(WrappedEntityLayer<T> layer){
+    protected void fireEntityChanged(){
+        for (Runnable entityChangedListener : entityChangedListeners) {
+            entityChangedListener.run();
+        }
+    }
+
+    protected <T> Collection<T> getAllModelsIn(WrappedEntityLayer<T> layer){
         ArrayList<T> models = new ArrayList<>();
         for (WrappedEntity<T> entity : layer) {
             T model = entity.model;
@@ -99,7 +105,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         layer.add(entity);
 
         //update property for the listeners
-        entityChanged.setValue(entity);
+        fireEntityChanged();
 
         return entity;
     }
@@ -238,7 +244,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
                 WrappedEntity wrappedEntity = layer.remove(id);
                 if(wrappedEntity != null){
                     shouldLayerRemoveSelf(layer);
-                    entityChanged.set(wrappedEntity);
+                    fireEntityChanged();
                     return true;
                 }
             }
@@ -261,7 +267,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
             WrappedEntity wrappedEntity = wrappedEntityLayer.remove(id);
             if(wrappedEntity != null){
                 shouldLayerRemoveSelf(wrappedEntityLayer);
-                entityChanged.set(wrappedEntity);
+                fireEntityChanged();
                 return true;
             }
         }
@@ -281,7 +287,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
             WrappedEntity entity = layer.remove(entityId);
             if(entity != null){
                 shouldLayerRemoveSelf(layer);
-                entityChanged.set(entity);
+                fireEntityChanged();
                 return true;
             }
         }
@@ -296,13 +302,14 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     public boolean removeLayer(String layername){
         WrappedEntityLayer removedLayer = this.allLayers.remove(layername);
         if(removedLayer != null){
-            entityChanged.set(null);
+            fireEntityChanged();
             return true;
         }
         return false;
     }
 
-    public ReadOnlyObjectProperty<WrappedEntity> entityChangedProperty() {
-        return entityChanged.getReadOnlyProperty();
+    public void addEntityChangedListener(Runnable listener){
+        this.entityChangedListeners.add(listener);
     }
+
 }

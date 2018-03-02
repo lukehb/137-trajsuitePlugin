@@ -22,8 +22,9 @@ public abstract class GraphicsPayload {
     public final BooleanProperty smoothPoints;
     public final ObjectProperty<Color> fallbackColor;
     public final ObservableList<GraphicsPrefab> additionalPrefabs;
+    public final ReadOnlyObjectProperty<RenderingModes> renderingMode;
 
-    private RenderingModes renderingMode;
+    private final ReadOnlyObjectWrapper<RenderingModes> renderingModeInternal;
     private final RenderingModes[] acceptedRenderingModes;
 
     public GraphicsPayload(){
@@ -33,7 +34,8 @@ public abstract class GraphicsPayload {
         this.pointOrLineSize = new SimpleIntegerProperty(3);
         this.smoothPoints = new SimpleBooleanProperty(true);
         this.fallbackColor = new SimpleObjectProperty<>(Color.RED);
-        this.renderingMode = defaultRenderingMode();
+        this.renderingModeInternal = new ReadOnlyObjectWrapper<>(defaultRenderingMode());
+        this.renderingMode = this.renderingModeInternal.getReadOnlyProperty();
         this.acceptedRenderingModes = getAcceptedRenderingModes();
         this.additionalPrefabs = FXCollections.observableArrayList();
     }
@@ -44,14 +46,10 @@ public abstract class GraphicsPayload {
         return new RenderingModes[]{defaultRenderingMode()};
     }
 
-    public RenderingModes getRenderingMode(){
-        return this.renderingMode;
-    }
-
     public void setRenderingMode(RenderingModes newMode){
         for (RenderingModes acceptedRenderingMode : acceptedRenderingModes) {
             if(acceptedRenderingMode == newMode){
-                this.renderingMode = newMode;
+                this.renderingModeInternal.set(newMode);
                 break;
             }
         }

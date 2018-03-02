@@ -24,7 +24,7 @@ public class EntityTreeView extends TreeView<ItemStateWidget> {
 
         remakeTree();
         //when layers change rebuild tree
-        this.layers.entityChangedProperty().addListener((observable, oldValue, newValue) -> remakeTree());
+        this.layers.addEntityChangedListener(this::remakeTree);
 
 
     }
