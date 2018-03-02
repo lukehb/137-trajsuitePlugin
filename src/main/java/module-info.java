@@ -30,6 +30,7 @@ open module onethreeseven.trajsuitePlugin {
     exports onethreeseven.trajsuitePlugin.util;
     exports onethreeseven.trajsuitePlugin.graphics;
     exports onethreeseven.trajsuitePlugin.settings;
+    exports onethreeseven.trajsuitePlugin.view.controller;
 
     //for javafx to work
     exports onethreeseven.trajsuitePlugin;

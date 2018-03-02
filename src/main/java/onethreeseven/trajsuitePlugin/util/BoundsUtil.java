@@ -2,6 +2,10 @@ package onethreeseven.trajsuitePlugin.util;
 
 import onethreeseven.geo.projection.AbstractGeographicProjection;
 import onethreeseven.geo.model.LatLonBounds;
+import onethreeseven.trajsuitePlugin.model.BoundingCoordinates;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -182,6 +186,7 @@ public final class BoundsUtil {
         }
         return bounds;
     }
+
 
 
 }

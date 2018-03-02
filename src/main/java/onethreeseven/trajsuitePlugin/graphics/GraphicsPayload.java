@@ -23,11 +23,6 @@ public abstract class GraphicsPayload {
     public final ObjectProperty<Color> fallbackColor;
     public final ObservableList<GraphicsPrefab> additionalPrefabs;
 
-    /**
-     * The string property for annotation text. An empty string means have no annotation, a non-empty string means have an annotation.
-     */
-    public final StringProperty annotationText;
-
     private RenderingModes renderingMode;
     private final RenderingModes[] acceptedRenderingModes;
 
@@ -40,7 +35,6 @@ public abstract class GraphicsPayload {
         this.fallbackColor = new SimpleObjectProperty<>(Color.RED);
         this.renderingMode = defaultRenderingMode();
         this.acceptedRenderingModes = getAcceptedRenderingModes();
-        this.annotationText = new SimpleStringProperty("");
         this.additionalPrefabs = FXCollections.observableArrayList();
     }
 

@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class Layers implements Iterable<WrappedEntityLayer> {
 
-    private ReadOnlyObjectWrapper<WrappedEntity> entityChanged = new ReadOnlyObjectWrapper<>();
+    protected ReadOnlyObjectWrapper<WrappedEntity> entityChanged = new ReadOnlyObjectWrapper<>();
 
     /**
      * Layers are per class type.
