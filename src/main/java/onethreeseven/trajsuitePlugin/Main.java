@@ -1,12 +1,9 @@
 package onethreeseven.trajsuitePlugin;
 
 
-import javafx.scene.Parent;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 import onethreeseven.trajsuitePlugin.view.BasicFxApplication;
-import onethreeseven.trajsuitePlugin.view.VisibilityWidget;
 
 
 /**
@@ -15,19 +12,15 @@ import onethreeseven.trajsuitePlugin.view.VisibilityWidget;
  */
 public class Main extends BasicFxApplication {
 
-    private final BaseTrajSuiteProgram program = new BaseTrajSuiteProgram();
-
     @Override
     protected BaseTrajSuiteProgram preStart(Stage stage) {
 
-
+        BaseTrajSuiteProgram program = BaseTrajSuiteProgram.getInstance();
 
         program.getLayers().add("Test");
         program.getLayers().add(137);
         program.getLayers().add(14);
         program.getLayers().add(42);
-
-
 
         return program;
     }

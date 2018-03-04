@@ -27,8 +27,6 @@ public abstract class BasicFxApplication extends Application {
         try{
             BaseTrajSuiteProgram program = preStart(stage);
 
-            LayersBasedEntitySupplier.setLayers(program.getLayers());
-
             Parent mainView = loadMainView(program);
 
             //pass view to stage

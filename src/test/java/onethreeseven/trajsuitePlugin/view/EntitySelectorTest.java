@@ -1,5 +1,6 @@
 package onethreeseven.trajsuitePlugin.view;
 
+import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 import onethreeseven.trajsuitePlugin.model.JavaFXThreadingRule;
 import onethreeseven.trajsuitePlugin.model.Layers;
 import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
@@ -19,7 +20,7 @@ public class EntitySelectorTest  {
     @Test
     public void testPopulateWithEntities(){
 
-        Layers layers = new Layers();
+        Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
 
         String[] strToAdd = new String[]{
               "test",
@@ -31,9 +32,9 @@ public class EntitySelectorTest  {
             layers.add(entityToAdd);
         }
 
-        LayersBasedEntitySupplier.setLayers(layers);
-
         EntitySelector<String> entitySelector = new EntitySelector<>(String.class);
+
+        Assert.assertTrue(entitySelector.getItems().size() == strToAdd.length);
 
         for (int i = 0; i < strToAdd.length; i++) {
             Assert.assertTrue(strToAdd[i].equals(entitySelector.getItems().get(i)));

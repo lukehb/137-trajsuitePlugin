@@ -8,30 +8,20 @@ import java.util.*;
  */
 public class LayersBasedEntitySupplier implements EntitySupplier {
 
-    private static Layers layers;
 
     @Override
     public <T> T supply(String id, String layername, Class<T> modelType) {
-        if(layers == null){
-            return null;
-        }
-        return layers.getEntity(layername, id, modelType).model;
+        return BaseTrajSuiteProgram.getInstance().getLayers().getEntity(layername, id, modelType).model;
     }
 
     @Override
     public <T> Collection<T> supply(String layername, Class<T> modelType) {
-        if(layers == null){
-            return null;
-        }
-        return layers.getLayerModels(layername, modelType);
+        return BaseTrajSuiteProgram.getInstance().getLayers().getLayerModels(layername, modelType);
     }
 
     @Override
     public <T> Collection<T> supply(Class<T> classType) {
-        if(layers == null){
-            return null;
-        }
-        return layers.getAllModelsOfType(classType);
+        return BaseTrajSuiteProgram.getInstance().getLayers().getAllModelsOfType(classType);
     }
 
     @Override
@@ -39,50 +29,48 @@ public class LayersBasedEntitySupplier implements EntitySupplier {
 
         Map<Class, Collection<Object>> selectedModels = new HashMap<>();
 
-        if(layers != null){
-            for (WrappedEntityLayer layer : layers) {
+        Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
 
-                Class modelType = layer.getModelType();
-                Collection<Object> existingCollection = selectedModels.computeIfAbsent(modelType, k -> new ArrayList<>());
+        for (WrappedEntityLayer layer : layers) {
 
-                for (Object item : layer) {
-                    WrappedEntity wrappedEntity = (WrappedEntity) item;
-                    if (wrappedEntity.isSelectedProperty().get()) {
-                        existingCollection.add(wrappedEntity.model);
-                    }
+            Class modelType = layer.getModelType();
+            Collection<Object> existingCollection = selectedModels.computeIfAbsent(modelType, k -> new ArrayList<>());
+
+            for (Object item : layer) {
+                WrappedEntity wrappedEntity = (WrappedEntity) item;
+                if (wrappedEntity.isSelectedProperty().get()) {
+                    existingCollection.add(wrappedEntity.model);
                 }
             }
         }
+
         return selectedModels;
     }
 
     @Override
     public void supplyAllSelectedByTypes(Map<Class, Collection<Object>> toPopulate) {
 
-        if(layers != null){
-            for (WrappedEntityLayer layer : layers) {
+        Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
 
-                Class modelType = layer.getModelType();
+        for (WrappedEntityLayer layer : layers) {
 
-                //check whether the map has this type of model
-                Collection<Object> existingCollection = toPopulate.get(modelType);
-                if(existingCollection == null){
-                    continue;
-                }
+            Class modelType = layer.getModelType();
 
-                //now check if the entities in the layer are selected, and if so, add them
-                for (Object item : layer) {
-                    WrappedEntity wrappedEntity = (WrappedEntity) item;
-                    if (wrappedEntity.isSelectedProperty().get()) {
-                        existingCollection.add(wrappedEntity.model);
-                    }
+            //check whether the map has this type of model
+            Collection<Object> existingCollection = toPopulate.get(modelType);
+            if(existingCollection == null){
+                continue;
+            }
+
+            //now check if the entities in the layer are selected, and if so, add them
+            for (Object item : layer) {
+                WrappedEntity wrappedEntity = (WrappedEntity) item;
+                if (wrappedEntity.isSelectedProperty().get()) {
+                    existingCollection.add(wrappedEntity.model);
                 }
             }
         }
 
     }
 
-    public static void setLayers(Layers layers) {
-        LayersBasedEntitySupplier.layers = layers;
-    }
 }

@@ -1,6 +1,5 @@
 import onethreeseven.trajsuitePlugin.command.PluginCommandsListing;
-import onethreeseven.trajsuitePlugin.model.EntitySupplier;
-import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
+import onethreeseven.trajsuitePlugin.model.*;
 
 open module onethreeseven.trajsuitePlugin {
 
@@ -23,6 +22,13 @@ open module onethreeseven.trajsuitePlugin {
     //for entity selection from drop down based on layers
     uses onethreeseven.trajsuitePlugin.model.EntitySupplier;
     provides EntitySupplier with LayersBasedEntitySupplier;
+
+    //for entity consumption
+    uses onethreeseven.trajsuitePlugin.model.EntityConsumer;
+    provides EntityConsumer with DefaultEntityConsumer;
+
+    uses onethreeseven.trajsuitePlugin.model.ProgramSupplier;
+    provides onethreeseven.trajsuitePlugin.model.ProgramSupplier with DefaultProgramSupplier;
 
     //general exports
     exports onethreeseven.trajsuitePlugin.view;
