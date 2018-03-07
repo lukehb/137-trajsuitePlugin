@@ -28,14 +28,14 @@ final class ViewUtil {
                 final int prefHeight = 600;
 
                 //put layers in scroll pane
-                ScrollPane layersViewParent = new ScrollPane();
+                //ScrollPane layersViewParent = new ScrollPane();
                 BorderPane contentParent = new BorderPane();
                 contentParent.setPrefHeight(prefHeight);
                 contentParent.setPrefWidth(prefWidth);
                 contentParent.setCenter(new EntityTreeView(layers));
-                layersViewParent.setContent(contentParent);
+                //layersViewParent.setContent(contentParent);
 
-                layerStage.setScene(new Scene(layersViewParent, prefWidth, prefHeight));
+                layerStage.setScene(new Scene(contentParent, prefWidth, prefHeight));
                 layerStage.initModality(Modality.NONE);
                 layerStage.setTitle("Entity Layers");
                 layerStage.initStyle(StageStyle.UTILITY);

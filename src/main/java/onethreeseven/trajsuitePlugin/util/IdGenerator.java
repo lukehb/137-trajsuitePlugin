@@ -22,7 +22,7 @@ public final class IdGenerator {
     }
 
     public static String nextId() {
-        //add it in the map if we don't have it already
+        //accumulate it in the map if we don't have it already
         int idx = counter.getAndIncrement();
 
         StringBuilder idString = new StringBuilder();

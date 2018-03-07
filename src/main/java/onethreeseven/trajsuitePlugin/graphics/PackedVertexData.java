@@ -55,7 +55,7 @@ public class PackedVertexData {
     }
 
     /**
-     * Use this constructor if you need to add data incrementally.
+     * Use this constructor if you need to accumulate data incrementally.
      * @param verts Total number of vertices when all vertices are eventually inserted.
      * @param vertexDataTypes Which vertex data types: vertex, color, normal etc.?
      */
@@ -74,7 +74,7 @@ public class PackedVertexData {
     /**
      * Adds a piece of vertex data to the
      *
-     * @param toAdd the data to add
+     * @param toAdd the data to accumulate
      * @return whether adding was successful
      */
     public boolean add(double toAdd) {

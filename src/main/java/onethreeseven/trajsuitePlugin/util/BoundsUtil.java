@@ -147,7 +147,7 @@ public final class BoundsUtil {
                 nd = (nd - curBounds[n][0]) / (curBounds[n][1] - curBounds[n][0]);
                 //project into the new bounds
                 nd = nd * (desiredBounds[n][1] - desiredBounds[n][0]) + desiredBounds[n][0];
-                //add the normalised value back into the the nd points
+                //accumulate the normalised value back into the the nd points
                 ndPoints[i][n] = nd;
             }
         }

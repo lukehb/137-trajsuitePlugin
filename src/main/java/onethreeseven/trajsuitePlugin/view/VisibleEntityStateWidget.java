@@ -11,14 +11,14 @@ public class VisibleEntityStateWidget extends EntityStateWidget {
 
     private final VisibilityWidget visibilityWidget;
 
-    protected VisibleEntityStateWidget(VisibleEntity entity) {
-        super(entity);
+    protected VisibleEntityStateWidget(String layername, VisibleEntity entity) {
+        super(layername, entity);
         this.visibilityWidget = new VisibilityWidget(entity.isVisibleProperty().get());
 
         //bi-directional bind of visibility property between the two
         entity.isVisibleProperty().bindBidirectional(this.visibilityWidget.isVisibleProperty());
 
-        //add visibility widget to this node
+        //accumulate visibility widget to this node
         getChildren().add(this.visibilityWidget);
 
     }

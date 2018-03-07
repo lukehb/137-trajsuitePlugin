@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test for {@link EntityLayer}
+ * Test for {@link WrappedEntityLayer}
  * @author Luke Bermingham
  */
 public class EntityLayerTest {
@@ -12,7 +12,7 @@ public class EntityLayerTest {
     @Test
     public void testAddAndChangeSelection() {
 
-        WrappedEntityLayer<String> layer = new WrappedEntityLayer<>("Mock", String.class);
+        WrappedEntityLayer layer = new WrappedEntityLayer("Mock");
 
         WrappedEntity<String> lerry = new WrappedEntity<>("Larry");
         lerry.isSelectedProperty().set(true);

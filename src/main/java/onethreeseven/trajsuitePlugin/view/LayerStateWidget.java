@@ -42,7 +42,7 @@ public class LayerStateWidget extends ItemStateWidget {
         };
         checkBox.addEventHandler(MouseEvent.MOUSE_CLICKED, checkboxClickedHandler);
 
-        //add the checkbox to the hox
+        //accumulate the checkbox to the hox
         getChildren().add(checkBox);
 
     }

@@ -1,5 +1,7 @@
 package onethreeseven.trajsuitePlugin.settings;
 
+import javafx.util.StringConverter;
+
 /**
  * Todo: write documentation
  *
@@ -17,13 +19,17 @@ public abstract class BaseSetting<T> {
         this.settingName = settingName;
         this.settingDescription = settingDescription;
         this.defaultSettingValue = defaultSettingValue;
-        ProgramSettings.initialiseSetting(category, settingName, settingDescription, defaultSettingValue.toString());
+        String storedValued = getConverter().toString(defaultSettingValue);
+        ProgramSettings.initialiseSetting(category, settingName, settingDescription, storedValued);
     }
 
     public void changeSetting(T newValue){
-        ProgramSettings.setSetting(category, settingName, settingDescription, newValue.toString());
+        String storedValued = getConverter().toString(newValue);
+        ProgramSettings.setSetting(category, settingName, settingDescription, storedValued);
     }
 
     public abstract T getSetting();
+
+    public abstract StringConverter<T> getConverter();
 
 }

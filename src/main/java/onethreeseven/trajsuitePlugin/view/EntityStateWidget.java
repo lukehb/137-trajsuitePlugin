@@ -13,15 +13,17 @@ import onethreeseven.trajsuitePlugin.model.WrappedEntity;
 public class EntityStateWidget extends ItemStateWidget {
 
     protected final WrappedEntity entity;
+    protected final String layername;
 
     //this tracks the entity
     protected final CheckBox selectionWidget;
 
-    protected EntityStateWidget(WrappedEntity entity){
+    protected EntityStateWidget(String layername, WrappedEntity entity){
+        this.layername = layername;
         this.entity = entity;
         this.selectionWidget = new CheckBox();
         this.selectionWidget.setSelected(entity.isSelectedProperty().get());
-        //add checkbox to this node (a hbox)
+        //accumulate checkbox to this node (a hbox)
         this.getChildren().add(this.selectionWidget);
         //bi-directional bind the selection property of the checkbox to the entity
         this.selectionWidget.selectedProperty().bindBidirectional(entity.isSelectedProperty());
@@ -34,7 +36,7 @@ public class EntityStateWidget extends ItemStateWidget {
 
     @Override
     public void removeFromLayers(Layers layers) {
-        layers.remove(entity.getId(), entity.getModel().getClass());
+        layers.remove(layername, entity.getId());
     }
 
     @Override

@@ -9,7 +9,7 @@ public abstract class AbstractMenuBarPopulator {
 
     /**
      * Add a menu to the program's view.
-     * @param menu The menus to add.
+     * @param menu The menus to accumulate.
      */
     public abstract void addMenu(TrajSuiteMenu menu);
 

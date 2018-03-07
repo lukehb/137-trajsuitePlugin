@@ -5,6 +5,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 import onethreeseven.trajsuitePlugin.view.AbstractMenuBarPopulator;
 import onethreeseven.trajsuitePlugin.view.MenuSupplier;
@@ -21,9 +22,11 @@ import java.util.ServiceLoader;
 public class MainViewController {
 
     protected final BaseTrajSuiteProgram program;
+    protected final Stage primaryStage;
 
-    public MainViewController(BaseTrajSuiteProgram program) {
+    public MainViewController(BaseTrajSuiteProgram program, Stage primaryStage) {
         this.program = program;
+        this.primaryStage = primaryStage;
     }
 
     @FXML
@@ -43,7 +46,7 @@ public class MainViewController {
 
         ServiceLoader<MenuSupplier> menuServiceLoader = ServiceLoader.load(MenuSupplier.class);
         for (MenuSupplier aMenuService : menuServiceLoader) {
-            aMenuService.supplyMenus(menuBarPopulator, program);
+            aMenuService.supplyMenus(menuBarPopulator, program, primaryStage);
         }
     }
 
@@ -76,7 +79,7 @@ public class MainViewController {
                     menubar.getMenus().add(topMenu);
                 }
 
-                //now add children
+                //now accumulate children
                 for (TrajSuiteMenu trajSuiteMenu : menu.getChildren()) {
                     addSubMenu(trajSuiteMenu, topMenu.getItems());
                 }
@@ -109,7 +112,7 @@ public class MainViewController {
                 siblingsMenus.add(existingMenu);
             }
 
-            //add the remaining children
+            //accumulate the remaining children
             for (TrajSuiteMenu childMenu : menu.getChildren()) {
                 addSubMenu(childMenu, existingMenu.getItems());
             }

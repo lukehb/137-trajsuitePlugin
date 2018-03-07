@@ -34,7 +34,7 @@ public class VisibleLayerStateWidget extends LayerStateWidget {
         };
         visibilityWidget.addEventHandler(MouseEvent.MOUSE_CLICKED, visibilityWidgetClickedHandler);
 
-        //add the checkbox to the hox
+        //accumulate the checkbox to the hox
         getChildren().add(visibilityWidget);
 
     }

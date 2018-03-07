@@ -24,8 +24,8 @@ open module onethreeseven.trajsuitePlugin {
     provides EntitySupplier with LayersBasedEntitySupplier;
 
     //for entity consumption
-    uses onethreeseven.trajsuitePlugin.model.EntityConsumer;
-    provides EntityConsumer with DefaultEntityConsumer;
+    uses TransactionProcessor;
+    provides TransactionProcessor with DefaultTransactionProcessor;
 
     uses onethreeseven.trajsuitePlugin.model.ProgramSupplier;
     provides onethreeseven.trajsuitePlugin.model.ProgramSupplier with DefaultProgramSupplier;
@@ -37,6 +37,7 @@ open module onethreeseven.trajsuitePlugin {
     exports onethreeseven.trajsuitePlugin.graphics;
     exports onethreeseven.trajsuitePlugin.settings;
     exports onethreeseven.trajsuitePlugin.view.controller;
+    exports onethreeseven.trajsuitePlugin.transaction;
 
     //for javafx to work
     exports onethreeseven.trajsuitePlugin;

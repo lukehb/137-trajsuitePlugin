@@ -23,7 +23,7 @@ public class TrajSuiteMenu {
 
     public void addChild(TrajSuiteMenu child){
         if(this.children == null){
-            throw new IllegalStateException("Cannot add a menu item when this menu was initialised with null children.");
+            throw new IllegalStateException("Cannot accumulate a menu item when this menu was initialised with null children.");
         }
         this.children.add(child);
     }

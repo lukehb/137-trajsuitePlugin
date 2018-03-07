@@ -21,7 +21,7 @@ public class TrajSuiteMenuItem extends TrajSuiteMenu {
 
     @Override
     public void addChild(TrajSuiteMenu child) {
-        throw new UnsupportedOperationException("Cannot add child to a menu item, can only add a child to a menu.");
+        throw new UnsupportedOperationException("Cannot accumulate child to a menu item, can only accumulate a child to a menu.");
     }
 
     @Override

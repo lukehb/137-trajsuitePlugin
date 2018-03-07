@@ -1,7 +1,13 @@
 package onethreeseven.trajsuitePlugin.model;
 
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import onethreeseven.trajsuitePlugin.graphics.GraphicsPayload;
+import onethreeseven.trajsuitePlugin.transaction.*;
 import onethreeseven.trajsuitePlugin.util.IdGenerator;
+
 import java.util.*;
 
 /**
@@ -18,7 +24,18 @@ import java.util.*;
  */
 public class Layers implements Iterable<WrappedEntityLayer> {
 
-    protected final Collection<Runnable> entityChangedListeners;
+
+
+    public final ReadOnlyObjectProperty<AddEntitiesTransaction> addEntitiesTransactionProperty;
+    protected final ReadOnlyObjectWrapper<AddEntitiesTransaction> addEntitiesTransactionInternal;
+
+    public final ReadOnlyObjectProperty<RemoveEntitiesTransaction> removeEntitiesTransactionProperty;
+    protected final ReadOnlyObjectWrapper<RemoveEntitiesTransaction> removeEntitiesTransactionInternal;
+
+    public final ReadOnlyObjectProperty<Integer> numEditedEntitiesProperty;
+    protected final ReadOnlyObjectWrapper<Integer> numEditedEntitiesInternal;
+
+    protected final AccumulatingEditHistory accumulator;
 
     /**
      * Layers are per class type.
@@ -28,25 +45,27 @@ public class Layers implements Iterable<WrappedEntityLayer> {
 
     public Layers(){
         this.allLayers = new HashMap<>();
-        this.entityChangedListeners = new ArrayList<>();
+        this.addEntitiesTransactionInternal = new ReadOnlyObjectWrapper<>(null);
+        this.addEntitiesTransactionProperty = addEntitiesTransactionInternal.getReadOnlyProperty();
+        this.removeEntitiesTransactionInternal = new ReadOnlyObjectWrapper<>(null);
+        this.removeEntitiesTransactionProperty = removeEntitiesTransactionInternal.getReadOnlyProperty();
+        this.numEditedEntitiesInternal = new ReadOnlyObjectWrapper<>(0);
+        this.numEditedEntitiesProperty = numEditedEntitiesInternal.getReadOnlyProperty();
+
+        //on accumulation of edits after 150ms, set the internal edit property to fire off listeners
+        this.accumulator = new AccumulatingEditHistory(150, numEditedEntitiesInternal::set);
     }
 
-    public <T> WrappedEntityLayer<T> getLayer(String layername, Class<T> modelType) {
-        WrappedEntityLayer layer = allLayers.get(layername);
-        if(layer != null && layer.getModelType().equals(modelType)){
-            return layer;
-        }
-        return null;
+    public WrappedEntityLayer getLayer(String layername) {
+        return allLayers.get(layername);
     }
 
     /**
-     * Get all models in the layer with the specified name and model type.
+     * Get all models in the layer with the specified name .
      * @param layername The name of the layer.
-     * @param modelType The type of the models you want.
-     * @param <T> The model type.
      * @return A collection of models of the specified type.
      */
-    public <T> Collection<T> getLayerModels(String layername, Class<T> modelType){
+    public Collection getLayerModels(String layername){
 
         WrappedEntityLayer layer = allLayers.get(layername);
         if(layer != null){
@@ -55,16 +74,10 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         return new ArrayList<>();
     }
 
-    protected void fireEntityChanged(){
-        for (Runnable entityChangedListener : entityChangedListeners) {
-            entityChangedListener.run();
-        }
-    }
-
-    protected <T> Collection<T> getAllModelsIn(WrappedEntityLayer<T> layer){
-        ArrayList<T> models = new ArrayList<>();
-        for (WrappedEntity<T> entity : layer) {
-            T model = entity.model;
+    protected Collection getAllModelsIn(WrappedEntityLayer layer){
+        ArrayList<Object> models = new ArrayList<>();
+        for (WrappedEntity entity : layer) {
+            Object model = entity.model;
             models.add(model);
         }
         return models;
@@ -73,67 +86,157 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     /**
      * Get the first layer with the specified model type.
      * @param modelType The specified model type.
-     * @param <T> The type of model.
-     * @return A layer of the specified model type, or null, if no such layer exists.
+     * @return A layer containing a model of the specified model type, or null, if no such layer exists.
      */
-    public <T> WrappedEntityLayer<T> getFirstLayerOfType(Class<T> modelType){
+    public WrappedEntityLayer getFirstLayerContaining(Class<?> modelType){
         for (WrappedEntityLayer layer : allLayers.values()) {
-            if(layer.getModelType().equals(modelType)){
-                return layer;
+            for (WrappedEntity wrappedEntity : layer) {
+                if(wrappedEntity.model.getClass().equals(modelType)){
+                    return layer;
+                }
             }
         }
         return null;
     }
 
-    /**
-     * Adds an entity with a specified id to a layer with a specified name.
-     * @param layername The name of the layer.
-     * @param id The id of the model.
-     * @param model The model itself.
-     * @param <T> The type of the model.
-     * @return The entity the model is now wrapped in.
-     */
-    public <T> WrappedEntity<T> add(String layername, String id, T model){
-        WrappedEntity<T> entity = new WrappedEntity<>(id, model);
-        Class<?> modelType = model.getClass();
-        WrappedEntityLayer layer = allLayers.get(layername);
+    public void process(AddEntitiesTransaction transaction){
 
-        if(layer == null){
-            layer = newEntityLayer(modelType, layername);
-            allLayers.put(layer.getLayerName(), layer);
+        Map<String, Map<String, WrappedEntity>> entitiesToAdd = new HashMap<>();
+        Collection<AddEntityUnit> units = transaction.getData();
+
+        for (AddEntityUnit unit : units) {
+            Map<String, WrappedEntity> growingMap = entitiesToAdd.computeIfAbsent(unit.getLayername(), k -> new HashMap<>());
+            WrappedEntity<?> entity;
+            if(unit instanceof AddBoundingEntityUnit){
+               entity = newEntity(unit.getEntityId(), unit.getModel(), ((AddBoundingEntityUnit) unit).getPayload());
+            }
+            else{
+                entity = newEntity(unit.getEntityId(), unit.getModel());
+            }
+            registerAllPropertyChangedEvents(entity);
+            growingMap.put(unit.getEntityId(), entity);
         }
-        layer.add(entity);
 
-        //update property for the listeners
-        fireEntityChanged();
+        for (Map.Entry<String, Map<String, WrappedEntity>> entry : entitiesToAdd.entrySet()) {
+            WrappedEntityLayer existingLayer = allLayers.get(entry.getKey());
+            //there is no existing layer, so make one and accumulate it the layers map
+            if(existingLayer == null){
+                existingLayer = newEntityLayer(entry.getKey(), entry.getValue());
+                allLayers.put(entry.getKey(), existingLayer);
+            }
+            //layer already exists, so just put all new entities in at once
+            else{
+                existingLayer.entities.putAll(entry.getValue());
+            }
+        }
 
-        return entity;
+        //fire off transaction change
+        addEntitiesTransactionInternal.set(transaction);
+
     }
 
-    /**
-     * Adds an entity with an id to a default-named layers for this type of model.
-     * @param id The id of the model.
-     * @param model The model itself.
-     * @param <T> The type of the model.
-     * @return The entity the model is now wrapped in.
-     */
-    public <T> WrappedEntity<T> add(String id, T model){
-        Class<?> modelType = model.getClass();
-        return this.add("Unnamed" + modelType.getSimpleName(), id, model);
+    public void process(RemoveEntitiesTransaction transaction){
+
+        for (RemoveEntityUnit removeEntityUnit : transaction.getData()) {
+           String layername = removeEntityUnit.getLayername();
+           WrappedEntityLayer existingLayer = allLayers.get(layername);
+           if(existingLayer != null){
+               //remove the entity
+               WrappedEntity removedEntity = existingLayer.entities.remove(removeEntityUnit.getId());
+               if(removedEntity != null){
+                   unRegisterPropertyChangedEvents(removedEntity);
+               }
+               //if layer is now empty after removal, remove the layer too
+               if(existingLayer.entities.isEmpty()){
+                   this.allLayers.remove(layername);
+               }
+           }
+        }
+
+        //set this so listeners get fired
+        this.removeEntitiesTransactionInternal.set(transaction);
     }
 
-    /**
-     * Adds a model to the layers and gives it an auto-generated id and puts it in a default named layer for this type of model.
-     * @param model The model to add.
-     * @param <T> The type of the model.
-     * @return The entity the model becomes wrapped in.
-     */
-    public <T> WrappedEntity<T> add(T model){
-        return this.add(IdGenerator.nextId(), model);
+    public void removeLayer(String id){
+        WrappedEntityLayer layer = allLayers.get(id);
+        if(layer == null){
+            return;
+        }
+        //make remove transaction
+        RemoveEntitiesTransaction transaction = new RemoveEntitiesTransaction();
+        for (WrappedEntity wrappedEntity : layer) {
+            transaction.add(layer.getLayerName(), wrappedEntity.getId());
+        }
+        //process the removed entities transaction
+        process(transaction);
     }
 
-    private <T> WrappedEntityLayer<T> newEntityLayer(Class<T> modelType, String layerName){
-        return new WrappedEntityLayer<>(layerName, modelType);
+    ///////////////////////
+    //Change listeners
+    ///////////////////////
+
+    protected final ChangeListener<? super Boolean> selectionChanged = new ChangeListener<>() {
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            accumulator.accumulate();
+        }
+    };
+
+    protected final ChangeListener<? super Boolean> visibilityChanged = new ChangeListener<>() {
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            accumulator.accumulate();
+        }
+    };
+
+
+    protected void registerAllPropertyChangedEvents(WrappedEntity entity){
+        entity.isSelectedProperty().addListener(selectionChanged);
+        if(entity instanceof VisibleEntity){
+            ((VisibleEntity) entity).isVisibleProperty().addListener(visibilityChanged);
+        }
+    }
+
+    protected void unRegisterPropertyChangedEvents(WrappedEntity entity){
+        entity.isSelectedProperty().removeListener(selectionChanged);
+        if(entity instanceof VisibleEntity){
+            ((VisibleEntity) entity).isVisibleProperty().removeListener(visibilityChanged);
+        }
+    }
+
+    protected <T> WrappedEntity<T> newEntity(String entityId, T model, GraphicsPayload graphicsPayload){
+        return new WrappedEntity<>(entityId, model);
+    }
+
+    protected <T> WrappedEntity<T> newEntity(String entityId, T model){
+        return new WrappedEntity<>(entityId, model);
+    }
+
+    protected WrappedEntityLayer newEntityLayer(String layerName, Map<String, WrappedEntity> entities){
+        return new WrappedEntityLayer(layerName, entities);
+    }
+
+    ///////////////////////////////
+    ///Add and remove shortcuts
+    ///////////////////////////////
+    public void remove(String layername, String entityId){
+        RemoveEntitiesTransaction transaction = new RemoveEntitiesTransaction();
+        transaction.add(layername, entityId);
+        process(transaction);
+    }
+
+    public void add(String layername, String entityId, Object model){
+        AddEntitiesTransaction transaction = new AddEntitiesTransaction();
+        transaction.add(layername, entityId, model);
+        process(transaction);
+    }
+
+    public void add(String layername, Object model){
+        this.add(layername, IdGenerator.nextId(), model);
+    }
+
+    public void add(Object model){
+        this.add("Unnamed " + model.getClass().getSimpleName(), model);
     }
 
     /**
@@ -162,14 +265,20 @@ public class Layers implements Iterable<WrappedEntityLayer> {
      */
     public <T> WrappedEntity<T> getEntity(String entityId, Class<T> modelType){
         for (WrappedEntityLayer layer : allLayers.values()) {
-            if(layer.getModelType().equals(modelType)){
-                WrappedEntity entity = layer.get(entityId);
-                if(entity != null){
-                    return entity;
-                }
+            WrappedEntity entity = layer.get(entityId);
+            if(entity != null && entity.model.getClass().equals(modelType)){
+                return entity;
             }
         }
         return null;
+    }
+
+    public WrappedEntity getEntity(String layername, String entityId){
+        WrappedEntityLayer layer = allLayers.get(layername);
+        if(layer == null){
+            return null;
+        }
+        return layer.get(entityId);
     }
 
     /**
@@ -197,8 +306,10 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     //@SuppressWarnings("unchecked")
     public <T> WrappedEntity<T> getFirstEntity(Class<T> modelType){
         for (WrappedEntityLayer layer : allLayers.values()) {
-            if(layer.getModelType().equals(modelType) && layer.size() > 0){
-                return (WrappedEntity<T>) layer.iterator().next();
+            for (WrappedEntity wrappedEntity : layer) {
+                if(wrappedEntity.model.getClass().equals(modelType)){
+                    return wrappedEntity;
+                }
             }
         }
         return null;
@@ -213,9 +324,10 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     public <T> Collection<T> getAllModelsOfType(Class<T> modelType){
         ArrayList<T> wrappedEntities = new ArrayList<>();
         for (WrappedEntityLayer layer : allLayers.values()) {
-            if(layer.getModelType().equals(modelType)){
-                Collection<T> modelsIn = getAllModelsIn(layer);
-                wrappedEntities.addAll(modelsIn);
+            for (WrappedEntity wrappedEntity : layer) {
+                if(wrappedEntity.model.getClass().equals(modelType)){
+                    wrappedEntities.add((T) wrappedEntity);
+                }
             }
         }
         return wrappedEntities;
@@ -224,92 +336,6 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     @Override
     public Iterator<WrappedEntityLayer> iterator() {
         return this.allLayers.values().iterator();
-    }
-
-    private void shouldLayerRemoveSelf(WrappedEntityLayer layer){
-        if(layer.size() == 0){
-            allLayers.remove(layer.getLayerName());
-        }
-    }
-
-    /**
-     * Remove an entity based on its id and the its model type. A faster method would be {@link Layers#remove(String, String)}
-     * @param id The entity id to remove.
-     * @param modelType The type of the model.
-     * @return True if we removed something, otherwise, false.
-     */
-    public boolean remove(String id, Class modelType){
-        for (WrappedEntityLayer layer : allLayers.values()) {
-            if(layer.getModelType().equals(modelType)){
-                WrappedEntity wrappedEntity = layer.remove(id);
-                if(wrappedEntity != null){
-                    shouldLayerRemoveSelf(layer);
-                    fireEntityChanged();
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Removes the first entity we encounter with the specified id.
-     * <br>
-     * This, potentially, requires iterating all layers, it would be more efficient to
-     * call {@link Layers#remove(String, String)}.
-     * <br>
-     * Note, if removing the entity empties a layer, the layer is removed too.
-     * @param id The id of the entity you wish to remove.
-     * @return True if the entity was removed, otherwise, false.
-     */
-    public boolean remove(String id){
-        for (WrappedEntityLayer wrappedEntityLayer : allLayers.values()) {
-            WrappedEntity wrappedEntity = wrappedEntityLayer.remove(id);
-            if(wrappedEntity != null){
-                shouldLayerRemoveSelf(wrappedEntityLayer);
-                fireEntityChanged();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * The fastest way to remove an entity from the layers.
-     * Note, that if the entity is removed and the layer is now empty, the layer is removed too.
-     * @param entityId The entity id.
-     * @param layername The layer name.
-     * @return True if we removed an entity, otherwise false.
-     */
-    public boolean remove(String entityId, String layername){
-        WrappedEntityLayer layer = allLayers.get(layername);
-        if(layer != null){
-            WrappedEntity entity = layer.remove(entityId);
-            if(entity != null){
-                shouldLayerRemoveSelf(layer);
-                fireEntityChanged();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * The fastest way to remove a layer.
-     * @param layername The name of the layer to remove.
-     * @return True if we removed a layer with this name, otherwise, false.
-     */
-    public boolean removeLayer(String layername){
-        WrappedEntityLayer removedLayer = this.allLayers.remove(layername);
-        if(removedLayer != null){
-            fireEntityChanged();
-            return true;
-        }
-        return false;
-    }
-
-    public void addEntityChangedListener(Runnable listener){
-        this.entityChangedListeners.add(listener);
     }
 
 }

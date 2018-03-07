@@ -1,5 +1,8 @@
 package onethreeseven.trajsuitePlugin.settings;
 
+import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
+
 /**
  * The distance in metres that things will be drawn off the ground
  * when they are meant to be on the ground.
@@ -20,5 +23,10 @@ public class SmallElevationSetting extends BaseSetting<Integer> {
     @Override
     public Integer getSetting() {
         return ProgramSettings.getSetting(category, settingName, defaultSettingValue);
+    }
+
+    @Override
+    public StringConverter<Integer> getConverter() {
+        return new IntegerStringConverter();
     }
 }

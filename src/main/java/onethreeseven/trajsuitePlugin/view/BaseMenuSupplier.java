@@ -1,5 +1,6 @@
 package onethreeseven.trajsuitePlugin.view;
 
+import javafx.stage.Stage;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
 
 /**
@@ -8,7 +9,7 @@ import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
  */
 public class BaseMenuSupplier implements MenuSupplier {
     @Override
-    public void supplyMenus(AbstractMenuBarPopulator populator, BaseTrajSuiteProgram program) {
+    public void supplyMenus(AbstractMenuBarPopulator populator, BaseTrajSuiteProgram program, Stage stage) {
 
         //File menu
         TrajSuiteMenu fileMenu = new TrajSuiteMenu("File");
@@ -20,7 +21,7 @@ public class BaseMenuSupplier implements MenuSupplier {
         TrajSuiteMenu viewMenu = new TrajSuiteMenu("View");
         //View >> Entity Layers
         viewMenu.addChild(new TrajSuiteMenuItem("Entity Layers",
-                ()-> ViewUtil.showEntityLayersWindow(program.getLayers(), null)));
+                ()-> ViewUtil.showEntityLayersWindow(program.getLayers(), stage)));
 
         populator.addMenu(fileMenu);
         populator.addMenu(viewMenu);

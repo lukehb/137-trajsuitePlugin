@@ -9,12 +9,12 @@ import onethreeseven.trajsuitePlugin.view.AnyMatchingBooleanBinding;
  * the layers visibility (e.g. if they are all off the layer turns off).
  * @author Luke Bermingham
  */
-public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visible {
+public class VisibleEntityLayer extends WrappedEntityLayer implements Visible {
 
     private final ReadOnlyBooleanWrapper isVisible;
 
-    public VisibleEntityLayer(String layerName, Class<T> modelType, boolean isVisible) {
-        super(layerName, modelType);
+    public VisibleEntityLayer(String layerName, boolean isVisible) {
+        super(layerName);
         this.isVisible = new ReadOnlyBooleanWrapper(isVisible);
 
         //setup binding so layer selection is always determined by children
@@ -32,7 +32,7 @@ public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visi
     }
 
     @Override
-    public void add(WrappedEntity<T> entity) {
+    public void add(WrappedEntity entity) {
 
         if(!(entity instanceof VisibleEntity)){
             throw new IllegalArgumentException("Entities of the visible entity layer must be VisibleEntities, " +
@@ -43,7 +43,7 @@ public class VisibleEntityLayer<T> extends WrappedEntityLayer<T> implements Visi
     }
 
     public void setAllVisible(boolean allVisible){
-        for (WrappedEntity<T> wrappedEntity : entities.values()) {
+        for (WrappedEntity wrappedEntity : entities.values()) {
             if(wrappedEntity instanceof VisibleEntity){
                 ((VisibleEntity) wrappedEntity).isVisibleProperty().set(allVisible);
             }

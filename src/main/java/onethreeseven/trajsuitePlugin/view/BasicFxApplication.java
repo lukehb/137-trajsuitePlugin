@@ -4,12 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import onethreeseven.trajsuitePlugin.model.BaseTrajSuiteProgram;
-import onethreeseven.trajsuitePlugin.model.LayersBasedEntitySupplier;
 import onethreeseven.trajsuitePlugin.view.controller.MainViewController;
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +23,7 @@ public abstract class BasicFxApplication extends Application {
         try{
             BaseTrajSuiteProgram program = preStart(stage);
 
-            Parent mainView = loadMainView(program);
+            Parent mainView = loadMainView(program, stage);
 
             //pass view to stage
             stage.setTitle(getTitle());
@@ -46,7 +42,7 @@ public abstract class BasicFxApplication extends Application {
 
     }
 
-    protected Parent loadMainView(BaseTrajSuiteProgram program) throws IOException {
+    protected Parent loadMainView(BaseTrajSuiteProgram program, Stage primaryStage) throws IOException {
         //call fxml
         URL fxmlView = null;
         try {
@@ -63,7 +59,7 @@ public abstract class BasicFxApplication extends Application {
         FXMLLoader loader = new FXMLLoader(fxmlView);
 
         //init view controller with data it needs
-        Object controller = initViewController(program);
+        Object controller = initViewController(program, primaryStage);
 
         //setup of wwd view ready
         loader.setController(controller);
@@ -73,8 +69,8 @@ public abstract class BasicFxApplication extends Application {
 
     protected void afterStart(Stage stage){};
 
-    protected Object initViewController(BaseTrajSuiteProgram program){
-        return new MainViewController(program);
+    protected Object initViewController(BaseTrajSuiteProgram program, Stage primaryStage){
+        return new MainViewController(program, primaryStage);
     }
 
     protected abstract BaseTrajSuiteProgram preStart(Stage stage);
