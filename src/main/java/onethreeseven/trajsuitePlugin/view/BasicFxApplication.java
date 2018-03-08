@@ -67,6 +67,13 @@ public abstract class BasicFxApplication extends Application {
         return loader.load();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        BaseTrajSuiteProgram.getInstance().getLayers().shutdown();
+        BaseTrajSuiteProgram.getInstance().getCLI().shutdown();
+    }
+
     protected void afterStart(Stage stage){};
 
     protected Object initViewController(BaseTrajSuiteProgram program, Stage primaryStage){

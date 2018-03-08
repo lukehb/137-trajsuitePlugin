@@ -11,10 +11,20 @@ import onethreeseven.trajsuitePlugin.model.BoundingCoordinates;
 public class AddBoundingEntityUnit extends AddEntityUnit {
 
     protected final GraphicsPayload payload;
+    protected final boolean visible;
 
     AddBoundingEntityUnit(String layername, String id, BoundingCoordinates model, GraphicsPayload payload) {
-        super(layername, id, model);
+        this(layername, id, model, false, true, payload);
+    }
+
+    AddBoundingEntityUnit(String layername, String id, BoundingCoordinates model, boolean selected, boolean visible, GraphicsPayload payload){
+        super(layername, id, model, selected);
+        this.visible = visible;
         this.payload = payload;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
     public GraphicsPayload getPayload() {

@@ -3,6 +3,9 @@ package onethreeseven.trajsuitePlugin.model;
 import javafx.beans.property.*;
 import onethreeseven.trajsuitePlugin.view.AnyMatchingBooleanBinding;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A {@link WrappedEntityLayer} that can toggle its visibility.
  * Note, toggling visibility effects all children, and likewise children can effect
@@ -13,17 +16,21 @@ public class VisibleEntityLayer extends WrappedEntityLayer implements Visible {
 
     private final ReadOnlyBooleanWrapper isVisible;
 
-    public VisibleEntityLayer(String layerName, boolean isVisible) {
-        super(layerName);
+    public VisibleEntityLayer(String layername, Map<String, ? extends VisibleEntity> entities, boolean isVisible){
+        super(layername, entities);
         this.isVisible = new ReadOnlyBooleanWrapper(isVisible);
 
         //setup binding so layer selection is always determined by children
-        this.isVisible.bind(new AnyMatchingBooleanBinding<>(true, entities, tWrappedEntity -> {
+        this.isVisible.bind(new AnyMatchingBooleanBinding<>(true, super.entities, tWrappedEntity -> {
             if(tWrappedEntity instanceof VisibleEntity){
                 return ((VisibleEntity) tWrappedEntity).isVisibleProperty();
             }
             return null;
         }));
+    }
+
+    public VisibleEntityLayer(String layerName, boolean isVisible) {
+        this(layerName, new HashMap<>(), isVisible);
     }
 
     @Override

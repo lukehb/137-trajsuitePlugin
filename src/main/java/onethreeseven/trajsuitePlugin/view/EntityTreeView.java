@@ -118,6 +118,7 @@ class EntityTreeView extends TreeView<ItemStateWidget> {
                 //layer does not exist
                 if(existingLayerItem == null){
                     existingLayerItem = addLayerTreeItem(layer);
+                    existingLayerItems.put(layername, existingLayerItem);
                 }
                 //make tree item for entity
                 addEntityTreeItem(layername, existingLayerItem, entity);

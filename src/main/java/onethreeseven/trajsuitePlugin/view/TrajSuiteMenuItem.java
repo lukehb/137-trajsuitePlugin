@@ -1,6 +1,7 @@
 package onethreeseven.trajsuitePlugin.view;
 
 import java.util.Collection;
+import java.util.PriorityQueue;
 
 /**
  * Represents a menu item that can be clicked to perform some task.
@@ -10,9 +11,13 @@ public class TrajSuiteMenuItem extends TrajSuiteMenu {
 
     protected final Runnable onClick;
 
-    public TrajSuiteMenuItem(String menuItemName, Runnable onClick) {
-        super(menuItemName, null);
+    public TrajSuiteMenuItem(String menuItemName, int order, Runnable onClick){
+        super(menuItemName, null, order);
         this.onClick = onClick;
+    }
+
+    public TrajSuiteMenuItem(String menuItemName, Runnable onClick) {
+        this(menuItemName, 1, onClick);
     }
 
     public void fireOnClick(){
@@ -25,7 +30,7 @@ public class TrajSuiteMenuItem extends TrajSuiteMenu {
     }
 
     @Override
-    public Collection<TrajSuiteMenu> getChildren() {
+    public PriorityQueue<TrajSuiteMenu> getChildren() {
         throw new UnsupportedOperationException("Cannot get child of a menu item, only menus can have children.");
     }
 }

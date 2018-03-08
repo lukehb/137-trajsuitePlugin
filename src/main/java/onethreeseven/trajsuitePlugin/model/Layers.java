@@ -108,12 +108,16 @@ public class Layers implements Iterable<WrappedEntityLayer> {
             Map<String, WrappedEntity> growingMap = entitiesToAdd.computeIfAbsent(unit.getLayername(), k -> new HashMap<>());
             WrappedEntity<?> entity;
             if(unit instanceof AddBoundingEntityUnit){
-               entity = newEntity(unit.getEntityId(), unit.getModel(), ((AddBoundingEntityUnit) unit).getPayload());
+               entity = newEntity(unit.getEntityId(),
+                       unit.getModel(),
+                       unit.isSelected(),
+                       ((AddBoundingEntityUnit) unit).isVisible(),
+                       ((AddBoundingEntityUnit) unit).getPayload());
             }
             else{
-                entity = newEntity(unit.getEntityId(), unit.getModel());
+                entity = newEntity(unit.getEntityId(), unit.getModel(), unit.isSelected());
             }
-            registerAllPropertyChangedEvents(entity);
+            onEntityAdded(entity);
             growingMap.put(unit.getEntityId(), entity);
         }
 
@@ -144,17 +148,21 @@ public class Layers implements Iterable<WrappedEntityLayer> {
                //remove the entity
                WrappedEntity removedEntity = existingLayer.entities.remove(removeEntityUnit.getId());
                if(removedEntity != null){
-                   unRegisterPropertyChangedEvents(removedEntity);
+                   onEntityRemoved(removedEntity);
                }
                //if layer is now empty after removal, remove the layer too
                if(existingLayer.entities.isEmpty()){
-                   this.allLayers.remove(layername);
+                    removeLayerInternal(existingLayer);
                }
            }
         }
 
         //set this so listeners get fired
         this.removeEntitiesTransactionInternal.set(transaction);
+    }
+
+    protected void removeLayerInternal(WrappedEntityLayer layer){
+        this.allLayers.remove(layer.getLayerName());
     }
 
     public void removeLayer(String id){
@@ -190,26 +198,26 @@ public class Layers implements Iterable<WrappedEntityLayer> {
     };
 
 
-    protected void registerAllPropertyChangedEvents(WrappedEntity entity){
+    protected void onEntityAdded(WrappedEntity entity){
         entity.isSelectedProperty().addListener(selectionChanged);
         if(entity instanceof VisibleEntity){
             ((VisibleEntity) entity).isVisibleProperty().addListener(visibilityChanged);
         }
     }
 
-    protected void unRegisterPropertyChangedEvents(WrappedEntity entity){
+    protected void onEntityRemoved(WrappedEntity entity){
         entity.isSelectedProperty().removeListener(selectionChanged);
         if(entity instanceof VisibleEntity){
             ((VisibleEntity) entity).isVisibleProperty().removeListener(visibilityChanged);
         }
     }
 
-    protected <T> WrappedEntity<T> newEntity(String entityId, T model, GraphicsPayload graphicsPayload){
-        return new WrappedEntity<>(entityId, model);
+    protected WrappedEntity newEntity(String entityId, Object model, boolean selected, boolean visible, GraphicsPayload graphicsPayload){
+        return new VisibleEntity<>(entityId, model, selected, visible);
     }
 
-    protected <T> WrappedEntity<T> newEntity(String entityId, T model){
-        return new WrappedEntity<>(entityId, model);
+    protected <T> WrappedEntity<T> newEntity(String entityId, T model, boolean selected){
+        return new WrappedEntity<>(entityId, model, selected);
     }
 
     protected WrappedEntityLayer newEntityLayer(String layerName, Map<String, WrappedEntity> entities){
@@ -225,18 +233,21 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         process(transaction);
     }
 
-    public void add(String layername, String entityId, Object model){
+    public WrappedEntity add(String layername, String entityId, Object model){
         AddEntitiesTransaction transaction = new AddEntitiesTransaction();
         transaction.add(layername, entityId, model);
         process(transaction);
+        return getEntity(layername, entityId);
     }
 
-    public void add(String layername, Object model){
-        this.add(layername, IdGenerator.nextId(), model);
+    public WrappedEntity add(String layername, Object model){
+        String entityId = IdGenerator.nextId();
+        return this.add(layername, entityId, model);
     }
 
-    public void add(Object model){
-        this.add("Unnamed " + model.getClass().getSimpleName(), model);
+    public WrappedEntity add(Object model){
+        String layername = "Unnamed " + model.getClass().getSimpleName();
+        return this.add(layername, model);
     }
 
     /**
@@ -331,6 +342,18 @@ public class Layers implements Iterable<WrappedEntityLayer> {
             }
         }
         return wrappedEntities;
+    }
+
+    public void clear(){
+        //remove all layers
+        while(!allLayers.isEmpty()){
+            removeLayer(allLayers.keySet().iterator().next());
+        }
+    }
+
+    public void shutdown(){
+        clear();
+        this.accumulator.shutdown();
     }
 
     @Override

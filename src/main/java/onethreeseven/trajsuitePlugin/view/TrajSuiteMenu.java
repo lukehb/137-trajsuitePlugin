@@ -2,6 +2,8 @@ package onethreeseven.trajsuitePlugin.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * Represent a menu which can contain either more menus or clickable {@link TrajSuiteMenuItem}.
@@ -10,15 +12,25 @@ import java.util.Collection;
 public class TrajSuiteMenu {
 
     protected final String name;
-    protected final Collection<TrajSuiteMenu> children;
+    protected final PriorityQueue<TrajSuiteMenu> children;
+    protected final int order;
 
-    public TrajSuiteMenu(String name, Collection<TrajSuiteMenu> children){
+    public TrajSuiteMenu(String name, Collection<TrajSuiteMenu> children, int order){
         this.name = name;
-        this.children = children;
+        this.children = new PriorityQueue<>(new Comparator<TrajSuiteMenu>() {
+            @Override
+            public int compare(TrajSuiteMenu o1, TrajSuiteMenu o2) {
+                return Integer.compare(o1.order, o2.order);
+            }
+        });
+        if(children != null){
+            this.children.addAll(children);
+        }
+        this.order = order;
     }
 
-    public TrajSuiteMenu(String name) {
-        this(name, new ArrayList<>());
+    public TrajSuiteMenu(String name, int order) {
+        this(name, new ArrayList<>(), order);
     }
 
     public void addChild(TrajSuiteMenu child){
@@ -28,7 +40,11 @@ public class TrajSuiteMenu {
         this.children.add(child);
     }
 
-    public Collection<TrajSuiteMenu> getChildren() {
+    public int getOrder() {
+        return order;
+    }
+
+    public PriorityQueue<TrajSuiteMenu> getChildren() {
         return children;
     }
 

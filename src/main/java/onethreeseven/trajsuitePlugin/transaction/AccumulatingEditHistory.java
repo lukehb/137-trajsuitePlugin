@@ -68,11 +68,15 @@ public class AccumulatingEditHistory {
         }, service).thenRun(()->{
             //reset edits
             //pass in edits to consumer
-            onAccumulated.accept(accumulatedEdits.getAndSet(0));
+            accumulatedTime.set(0);
+            onAccumulated.accept(accumulatedEdits.get());
             currentlyWorking.set(false);
         });
     }
 
+    public void shutdown(){
+        this.service.shutdown();
+    }
 
 
 }

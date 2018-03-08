@@ -13,6 +13,8 @@ import onethreeseven.trajsuitePlugin.view.TrajSuiteMenu;
 import onethreeseven.trajsuitePlugin.view.TrajSuiteMenuItem;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.ServiceLoader;
 
 /**
@@ -48,42 +50,58 @@ public class MainViewController {
         for (MenuSupplier aMenuService : menuServiceLoader) {
             aMenuService.supplyMenus(menuBarPopulator, program, primaryStage);
         }
+
+        menuBarPopulator.buildMenus();
+
     }
 
 
     private class MenubarPopulator extends AbstractMenuBarPopulator {
 
         final MenuBar menubar;
+        final PriorityQueue<TrajSuiteMenu> menuQueue;
 
         MenubarPopulator(MenuBar menubar) {
             this.menubar = menubar;
+            this.menuQueue = new PriorityQueue<>(Comparator.comparingInt(TrajSuiteMenu::getOrder));
         }
 
         @Override
         public void addMenu(TrajSuiteMenu menu) {
             if (menubar != null) {
+                this.menuQueue.add(menu);
+            }
+        }
 
-                //check for name clash with existing menus
-                String toLookFor = menu.getName();
-                Menu topMenu = null;
+        void buildMenus(){
+            while(!menuQueue.isEmpty()){
+                addTopLevelMenu(menuQueue.poll());
+            }
+        }
 
-                for (Menu someExistingMenu : menubar.getMenus()) {
-                    if (someExistingMenu.getText().equals(toLookFor)) {
-                        topMenu = someExistingMenu;
-                        break;
-                    }
-                }
+        private void addTopLevelMenu(TrajSuiteMenu menu){
+            //check for name clash with existing menus
+            String toLookFor = menu.getName();
+            Menu topMenu = null;
 
-                if (topMenu == null) {
-                    topMenu = new Menu(toLookFor);
-                    menubar.getMenus().add(topMenu);
-                }
-
-                //now accumulate children
-                for (TrajSuiteMenu trajSuiteMenu : menu.getChildren()) {
-                    addSubMenu(trajSuiteMenu, topMenu.getItems());
+            for (Menu someExistingMenu : menubar.getMenus()) {
+                if (someExistingMenu.getText().equals(toLookFor)) {
+                    topMenu = someExistingMenu;
+                    break;
                 }
             }
+
+            if (topMenu == null) {
+                topMenu = new Menu(toLookFor);
+                menubar.getMenus().add(topMenu);
+            }
+
+            //now accumulate children
+            PriorityQueue<TrajSuiteMenu> childMenus = menu.getChildren();
+            while(!childMenus.isEmpty()){
+                addSubMenu(childMenus.poll(), topMenu.getItems());
+            }
+
         }
 
         private void addSubMenu(TrajSuiteMenu menu, Collection<MenuItem> siblingsMenus) {
@@ -113,8 +131,9 @@ public class MainViewController {
             }
 
             //accumulate the remaining children
-            for (TrajSuiteMenu childMenu : menu.getChildren()) {
-                addSubMenu(childMenu, existingMenu.getItems());
+            PriorityQueue<TrajSuiteMenu> childMenus = menu.getChildren();
+            while(!childMenus.isEmpty()){
+                addSubMenu(childMenus.poll(), existingMenu.getItems());
             }
 
         }

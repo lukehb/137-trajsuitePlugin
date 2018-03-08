@@ -26,7 +26,7 @@ public class WrappedEntityLayer implements Selectable, Iterable<WrappedEntity> {
         this(layerName, null);
     }
 
-    public WrappedEntityLayer(String layerName, Map<String, WrappedEntity> toInsert){
+    public WrappedEntityLayer(String layerName, Map<String, ? extends WrappedEntity> toInsert){
         this.layerName = layerName;
         this.entities = FXCollections.observableMap(initMap());
         if(toInsert != null){

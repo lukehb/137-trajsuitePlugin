@@ -12,13 +12,13 @@ public class BaseMenuSupplier implements MenuSupplier {
     public void supplyMenus(AbstractMenuBarPopulator populator, BaseTrajSuiteProgram program, Stage stage) {
 
         //File menu
-        TrajSuiteMenu fileMenu = new TrajSuiteMenu("File");
+        TrajSuiteMenu fileMenu = new TrajSuiteMenu("File", -99);
         //File >> Exit
         fileMenu.addChild(new TrajSuiteMenuItem("Exit",
                 ()-> program.getCLI().doCommand(new String[]{"exit"})));
 
         //View menu
-        TrajSuiteMenu viewMenu = new TrajSuiteMenu("View");
+        TrajSuiteMenu viewMenu = new TrajSuiteMenu("View", 10);
         //View >> Entity Layers
         viewMenu.addChild(new TrajSuiteMenuItem("Entity Layers",
                 ()-> ViewUtil.showEntityLayersWindow(program.getLayers(), stage)));

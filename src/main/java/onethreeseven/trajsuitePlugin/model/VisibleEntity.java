@@ -21,12 +21,12 @@ public class VisibleEntity<T> extends WrappedEntity<T> implements Visible {
     }
 
     public VisibleEntity(String id, T model, boolean isVisible) {
-        super(id, model);
+        this(id, model, false, isVisible);
+    }
+
+    public VisibleEntity(String id, T model, boolean selected, boolean isVisible) {
+        super(id, model, selected);
         this.isVisible = new SimpleBooleanProperty(isVisible);
-
-        //accumulate visibility as an anything change listener
-        this.isVisible.addListener((observable, oldValue, newValue) -> fireAnythingChangedListeners());
-
     }
 
     @Override
