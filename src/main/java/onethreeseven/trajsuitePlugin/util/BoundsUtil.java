@@ -3,8 +3,6 @@ package onethreeseven.trajsuitePlugin.util;
 import onethreeseven.geo.projection.AbstractGeographicProjection;
 import onethreeseven.geo.model.LatLonBounds;
 import onethreeseven.trajsuitePlugin.model.BoundingCoordinates;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -15,6 +13,52 @@ import java.util.Iterator;
 public final class BoundsUtil {
 
     private BoundsUtil() {
+    }
+
+    /**
+     * Gets the bounds given a collection of bounding coordinates.
+     * @param bounds The ultimate bounds of the collection.
+     * @return The bounds of the collection.
+     */
+    public static double[][] calculateFromBoundingCoordinates(Collection<? extends BoundingCoordinates> bounds){
+
+        if(bounds == null || bounds.isEmpty()){
+            throw new IllegalArgumentException("Collection of bounds must be non-null and non-empty.");
+        }
+
+        int nDims = bounds.iterator().next().getBounds().length;
+        double[][] curBounds = BoundsUtil.boundToOverride(nDims);
+
+        for (BoundingCoordinates boundingCoords : bounds) {
+            expandBounds(curBounds, boundingCoords.getBounds());
+        }
+
+        return curBounds;
+    }
+
+    /**
+     * Get the corners of the bounds
+     * @param bounds the bounds [nDim][{min, max}]
+     * @return The corner points from the given bounds
+     */
+    public static double[][] getCorners(double[][] bounds) {
+        int nDimensions = bounds.length;
+        //rectangle 4, cube 8, tesseract 16... etc
+        int nCorners = (nDimensions > 1) ? (int) Math.pow(2, nDimensions) : 0;
+        double[][] corners = new double[nCorners][];
+        //get each corner we just permute the bounds
+
+        //go through each corner
+        for (int i = 0; i < nCorners; i++) {
+            double[] corner = new double[nDimensions];
+            for (int j = 0; j < nDimensions; j++) {
+                //we get the binary representation, i.e binary array of size nDimensions
+                int idx = ((i & (nCorners >> j + 1)) == 0) ? 0 : 1;
+                corner[j] = bounds[j][idx];
+            }
+            corners[i] = corner;
+        }
+        return corners;
     }
 
     public static double[] getCenter(double[][] bounds){
@@ -151,6 +195,37 @@ public final class BoundsUtil {
                 ndPoints[i][n] = nd;
             }
         }
+    }
+
+    /**
+     * Get the all the mins/maxs of a given nD bounds.
+     * @param bounds The bounds, i.e [{min, max},{min,max},{min,max}]
+     * @param min True: get all the mins. False: get all the maxs.
+     * @return An nd-point containing all the mins (or maxs).
+     */
+    public static double[] getMinOrMaxOfBounds(double[][] bounds, boolean min){
+        double[] ndPt = new double[bounds.length];
+        int idx = min ? 0 : 1;
+        for (int i = 0; i < bounds.length; i++) {
+            ndPt[i] = bounds[i][idx];
+        }
+        return ndPt;
+    }
+
+    /**
+     * Expands one bounds by another by taking on its minimum and maximum points (if they are smaller/larger).
+     * @param boundsToExpand The bounds to expand.
+     * @param otherBounds The bounds to use to expand the first parameter.
+     */
+    public static void expandBounds(double[][] boundsToExpand, double[][] otherBounds){
+        if(boundsToExpand.length != otherBounds.length){
+            throw new IllegalArgumentException("If bounds are to be expanded they must have the same dimensionality.");
+        }
+        //extract min/max points from other bounds
+        double[] minPt = getMinOrMaxOfBounds(otherBounds, true);
+        double[] maxPt = getMinOrMaxOfBounds(otherBounds, false);
+        expandBounds(boundsToExpand, minPt);
+        expandBounds(boundsToExpand, maxPt);
     }
 
     /**
