@@ -31,7 +31,7 @@ public abstract class BasicFxApplication extends Application {
             stage.show();
 
             //start layers in its own stage here
-            ViewUtil.showEntityLayersWindow(program.getLayers(), stage);
+            ViewUtil.showEntityLayersWindow(stage);
 
         }catch (Exception e){
             System.err.println("Error in pre-start of application");

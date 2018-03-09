@@ -9,11 +9,17 @@ import javafx.beans.property.StringProperty;
  */
 public class LabelPrefab extends GraphicsPrefab {
 
+    public final boolean isAnnotation;
     public final StringProperty label;
 
     public LabelPrefab(String label, double[] latlon) {
+        this(label, true, latlon);
+    }
+
+    public LabelPrefab(String label, boolean isAnnotation, double[] latlon){
         super(latlon);
         this.label = new SimpleStringProperty(label);
+        this.isAnnotation = isAnnotation;
     }
 
 }

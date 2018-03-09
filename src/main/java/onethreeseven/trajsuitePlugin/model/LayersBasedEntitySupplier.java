@@ -1,6 +1,7 @@
 package onethreeseven.trajsuitePlugin.model;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Supplies entities from the {@link Layers} object.
@@ -24,6 +25,11 @@ public class LayersBasedEntitySupplier implements EntitySupplier {
             }
         }
         return typedModels;
+    }
+
+    @Override
+    public Map<String, WrappedEntity> supplyAllMatching(Predicate<WrappedEntity> filter) {
+        return BaseTrajSuiteProgram.getInstance().layers.getAllMatching(filter);
     }
 
     @Override

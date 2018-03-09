@@ -13,8 +13,6 @@ public abstract class ItemStateWidget extends HBox {
 
     public abstract Selectable getSelectable();
 
-    public abstract void removeFromLayers(Layers layers);
-
     public abstract void unbind();
 
     public abstract String itemAsText();

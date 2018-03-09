@@ -21,7 +21,7 @@ public class BaseMenuSupplier implements MenuSupplier {
         TrajSuiteMenu viewMenu = new TrajSuiteMenu("View", 10);
         //View >> Entity Layers
         viewMenu.addChild(new TrajSuiteMenuItem("Entity Layers",
-                ()-> ViewUtil.showEntityLayersWindow(program.getLayers(), stage)));
+                ()-> ViewUtil.showEntityLayersWindow(stage)));
 
         populator.addMenu(fileMenu);
         populator.addMenu(viewMenu);

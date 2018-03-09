@@ -1,5 +1,7 @@
 import onethreeseven.trajsuitePlugin.command.PluginCommandsListing;
 import onethreeseven.trajsuitePlugin.model.*;
+import onethreeseven.trajsuitePlugin.view.BaseContextMenuSupplier;
+import onethreeseven.trajsuitePlugin.view.EntityContextMenuSupplier;
 
 open module onethreeseven.trajsuitePlugin {
 
@@ -29,6 +31,9 @@ open module onethreeseven.trajsuitePlugin {
 
     uses onethreeseven.trajsuitePlugin.model.ProgramSupplier;
     provides onethreeseven.trajsuitePlugin.model.ProgramSupplier with DefaultProgramSupplier;
+
+    uses onethreeseven.trajsuitePlugin.view.EntityContextMenuSupplier;
+    provides EntityContextMenuSupplier with BaseContextMenuSupplier;
 
     //general exports
     exports onethreeseven.trajsuitePlugin.view;

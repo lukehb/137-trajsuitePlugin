@@ -1,7 +1,6 @@
 package onethreeseven.trajsuitePlugin.view;
 
 import javafx.scene.control.CheckBox;
-import onethreeseven.trajsuitePlugin.model.Layers;
 import onethreeseven.trajsuitePlugin.model.Selectable;
 import onethreeseven.trajsuitePlugin.model.WrappedEntity;
 
@@ -32,11 +31,6 @@ public class EntityStateWidget extends ItemStateWidget {
     @Override
     public Selectable getSelectable() {
         return entity;
-    }
-
-    @Override
-    public void removeFromLayers(Layers layers) {
-        layers.remove(layername, entity.getId());
     }
 
     @Override

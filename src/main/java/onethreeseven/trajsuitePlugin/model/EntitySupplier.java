@@ -2,6 +2,7 @@ package onethreeseven.trajsuitePlugin.model;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Interface for Services to supply entities.
@@ -12,6 +13,13 @@ public interface EntitySupplier {
     public <T> T supply(String id, String layername, Class<T> modelType);
 
     public <T> Collection<T> supply(String layername, Class<T> modelType);
+
+    /**
+     * Gets all entities (and their ids) that match the given predicate.
+     * @param filter The filter to use on each entity.
+     * @return A map of entity ids and models. Some overwriting may occur if ids are not unique.
+     */
+    public Map<String, WrappedEntity> supplyAllMatching(Predicate<WrappedEntity> filter);
 
     /**
      * Supply all entities of a certain type, regardless of selection.

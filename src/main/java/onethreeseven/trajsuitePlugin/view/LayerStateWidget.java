@@ -4,7 +4,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
-import onethreeseven.trajsuitePlugin.model.Layers;
 import onethreeseven.trajsuitePlugin.model.Selectable;
 import onethreeseven.trajsuitePlugin.model.WrappedEntityLayer;
 
@@ -50,11 +49,6 @@ public class LayerStateWidget extends ItemStateWidget {
     @Override
     public Selectable getSelectable() {
         return layer;
-    }
-
-    @Override
-    public void removeFromLayers(Layers layers) {
-        layers.removeLayer(layer.getLayerName());
     }
 
     @Override

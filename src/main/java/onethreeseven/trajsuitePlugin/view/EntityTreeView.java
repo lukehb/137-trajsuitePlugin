@@ -20,22 +20,23 @@ import java.util.Map;
  */
 class EntityTreeView extends TreeView<ItemStateWidget> {
 
-    private final Layers layers;
 
-    EntityTreeView(Layers layers){
+    EntityTreeView(){
         super(new TreeItem<>());
-        this.layers = layers;
         this.setShowRoot(false);
         getRoot().setExpanded(true);
 
         this.setCellFactory(makeCellFactory());
 
         remakeTree();
+
+        Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
+
         //when entities added rebuild the tree
-        this.layers.addEntitiesTransactionProperty.addListener(
+        layers.addEntitiesTransactionProperty.addListener(
                 (observable, oldValue, newValue) -> onEntitiesAdded(newValue));
         //when entities removed rebuild the tree
-        this.layers.removeEntitiesTransactionProperty.addListener(
+        layers.removeEntitiesTransactionProperty.addListener(
                 (observable, oldValue, newValue) -> onEntitiesRemoved(newValue));
 
 
@@ -43,27 +44,7 @@ class EntityTreeView extends TreeView<ItemStateWidget> {
 
     private Callback<TreeView<ItemStateWidget>, TreeCell<ItemStateWidget>> makeCellFactory(){
 
-        return param -> {
-
-            final ItemStateWidgetTreeCell cell = new ItemStateWidgetTreeCell();
-            final ContextMenu menu = new ContextMenu();
-
-            //setup delete right click option
-            MenuItem deleteMenuItem = new MenuItem("Delete");
-            deleteMenuItem.setOnAction(event -> {
-                ItemStateWidget cellValue = cell.getItem();
-                cellValue.removeFromLayers(layers);
-                //cleanup attached menus too
-                menu.getItems().clear();
-                cell.setContextMenu(null);
-            });
-
-            //attach menus
-            menu.getItems().add(deleteMenuItem);
-            cell.setContextMenu(menu);
-
-            return cell;
-        };
+        return param -> new ItemStateWidgetTreeCell();
 
     }
 
@@ -106,6 +87,8 @@ class EntityTreeView extends TreeView<ItemStateWidget> {
         Platform.runLater(()->{
 
             Map<String, TreeItem<ItemStateWidget>> existingLayerItems = makeTreeLayerMap();
+
+            Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
 
             //go through each add entity unit and add a tree item if we haven't go one already
             for (AddEntityUnit addEntityUnit : transaction.getData()) {
@@ -205,6 +188,8 @@ class EntityTreeView extends TreeView<ItemStateWidget> {
 
             //clear the tree
             getRoot().getChildren().clear();
+
+            Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
 
             for (WrappedEntityLayer layer : layers) {
                 //accumulate layers to tree

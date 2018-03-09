@@ -9,6 +9,7 @@ import onethreeseven.trajsuitePlugin.transaction.*;
 import onethreeseven.trajsuitePlugin.util.IdGenerator;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * The manager of all layers and persistent entities in the program.
@@ -326,8 +327,20 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         return null;
     }
 
+    public Map<String, WrappedEntity> getAllMatching(Predicate<WrappedEntity> filter){
+        Map<String, WrappedEntity> output = new HashMap<>();
+        for (WrappedEntityLayer layer : allLayers.values()) {
+            for (Map.Entry<String, WrappedEntity> entry : layer.entities.entrySet()) {
+                if(filter.test(entry.getValue())){
+                    output.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return output;
+    }
+
     /**
-     * Get all models that have the specified model type.
+     * Get all models that have the specified model type (or are assignable from this type).
      * @param modelType The type of model you are interested in getting.
      * @param <T> The type of the model.
      * @return A collection of layers with the specified model type, or an empty collection if no such layers exist.
@@ -336,7 +349,7 @@ public class Layers implements Iterable<WrappedEntityLayer> {
         ArrayList<T> wrappedEntities = new ArrayList<>();
         for (WrappedEntityLayer layer : allLayers.values()) {
             for (WrappedEntity wrappedEntity : layer) {
-                if(wrappedEntity.model.getClass().equals(modelType)){
+                if(modelType.isAssignableFrom(wrappedEntity.model.getClass())){
                     wrappedEntities.add((T) wrappedEntity);
                 }
             }
