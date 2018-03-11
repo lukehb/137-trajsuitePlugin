@@ -14,7 +14,7 @@ public class BaseMenuSupplier implements MenuSupplier {
         //File menu
         TrajSuiteMenu fileMenu = new TrajSuiteMenu("File", -99);
         //File >> Exit
-        fileMenu.addChild(new TrajSuiteMenuItem("Exit",
+        fileMenu.addChild(new TrajSuiteMenuItem("Exit", 99,
                 ()-> program.getCLI().doCommand(new String[]{"exit"})));
 
         //View menu

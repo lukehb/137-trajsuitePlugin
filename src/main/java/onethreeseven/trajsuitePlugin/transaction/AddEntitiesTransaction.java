@@ -18,6 +18,11 @@ public class AddEntitiesTransaction extends EntityTransaction<AddEntityUnit> {
         return this;
     }
 
+    public AddEntitiesTransaction add(String layername, String entityId, Object model, boolean selected){
+        super.add(new AddEntityUnit(layername, entityId, model, selected));
+        return this;
+    }
+
     public AddEntitiesTransaction add(String layername, String entityId, BoundingCoordinates model, GraphicsPayload payload){
         super.add(new AddBoundingEntityUnit(layername, entityId, model, payload));
         return this;

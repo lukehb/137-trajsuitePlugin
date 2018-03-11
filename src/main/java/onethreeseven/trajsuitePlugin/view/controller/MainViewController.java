@@ -69,6 +69,15 @@ public class MainViewController {
         @Override
         public void addMenu(TrajSuiteMenu menu) {
             if (menubar != null) {
+                //scan for merge of top level menu
+                for (TrajSuiteMenu trajSuiteMenu : menuQueue) {
+                    if(trajSuiteMenu.getName().equals(menu.getName())){
+                        trajSuiteMenu.getChildren().addAll(menu.getChildren());
+                        return;
+                    }
+                }
+
+                //no merge, just add it
                 this.menuQueue.add(menu);
             }
         }
@@ -80,21 +89,9 @@ public class MainViewController {
         }
 
         private void addTopLevelMenu(TrajSuiteMenu menu){
-            //check for name clash with existing menus
-            String toLookFor = menu.getName();
-            Menu topMenu = null;
 
-            for (Menu someExistingMenu : menubar.getMenus()) {
-                if (someExistingMenu.getText().equals(toLookFor)) {
-                    topMenu = someExistingMenu;
-                    break;
-                }
-            }
-
-            if (topMenu == null) {
-                topMenu = new Menu(toLookFor);
-                menubar.getMenus().add(topMenu);
-            }
+            Menu topMenu = new Menu(menu.getName());
+            menubar.getMenus().add(topMenu);
 
             //now accumulate children
             PriorityQueue<TrajSuiteMenu> childMenus = menu.getChildren();
