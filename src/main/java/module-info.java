@@ -43,6 +43,7 @@ open module onethreeseven.trajsuitePlugin {
     exports onethreeseven.trajsuitePlugin.settings;
     exports onethreeseven.trajsuitePlugin.view.controller;
     exports onethreeseven.trajsuitePlugin.transaction;
+    exports onethreeseven.trajsuitePlugin.algorithm;
 
     //for javafx to work
     exports onethreeseven.trajsuitePlugin;
