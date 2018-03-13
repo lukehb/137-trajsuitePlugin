@@ -2,11 +2,16 @@ package onethreeseven.trajsuitePlugin.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -14,6 +19,7 @@ import onethreeseven.trajsuitePlugin.model.Layers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * Some utils for dealing with views
@@ -84,5 +90,41 @@ public final class ViewUtil {
 
         });
     }
+
+    public static void showInformationWindow(String title, Map<String, String> information){
+
+        Stage infoStage = new Stage();
+        infoStage.initModality(Modality.NONE);
+        infoStage.setTitle(title);
+        infoStage.initStyle(StageStyle.UTILITY);
+
+        GridPane pane = new GridPane();
+        int row = 0;
+        for (Map.Entry<String, String> entry : information.entrySet()) {
+
+            Label infoLabel = new Label(entry.getKey());
+            GridPane.setHalignment(infoLabel, HPos.RIGHT);
+
+            Label valueLabel = new Label(entry.getValue());
+            GridPane.setHalignment(valueLabel, HPos.LEFT);
+
+            pane.add(infoLabel, 0, row);
+            pane.add(valueLabel, 1, row);
+
+            row++;
+        }
+
+        pane.setHgap(10);
+        for (ColumnConstraints columnConstraints : pane.getColumnConstraints()) {
+            columnConstraints.setPrefWidth(100);
+        }
+        pane.setPadding(new Insets(10));
+
+        Scene scene = new Scene(pane);
+        infoStage.setScene(scene);
+
+        infoStage.show();
+    }
+
 
 }
