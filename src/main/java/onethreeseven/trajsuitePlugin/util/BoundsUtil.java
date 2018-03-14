@@ -61,6 +61,24 @@ public final class BoundsUtil {
         return corners;
     }
 
+    /**
+     * Multiplies the length of each dimension together to produce a single unit.
+     * In 2d this is area, in 3d this volume, in 4d this is hyper-volume?
+     * @param bounds The bounds
+     * @return The area, or volume, or hyper-volume of the bounds (depends on dimensionality of the bounds).
+     */
+    public static double getVolume(double[][] bounds){
+        double[] lengths = new double[bounds.length];
+        for (int i = 0; i < bounds.length; i++) {
+            lengths[i] = bounds[i][1] - bounds[i][0];
+        }
+        double vol = 1;
+        for (double length : lengths) {
+            vol *= length;
+        }
+        return vol;
+    }
+
     public static double[] getCenter(double[][] bounds){
         int nDimensions = bounds.length;
         double[] center = new double[nDimensions];
