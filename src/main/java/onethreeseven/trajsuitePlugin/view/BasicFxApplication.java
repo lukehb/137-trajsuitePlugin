@@ -17,8 +17,14 @@ import java.net.URL;
  */
 public abstract class BasicFxApplication extends Application {
 
+    protected Stage preStageSetup(Stage primaryStage){
+        return primaryStage;
+    }
+
     @Override
     public void start(Stage stage) {
+
+        stage = preStageSetup(stage);
 
         try{
             BaseTrajSuiteProgram program = preStart(stage);
@@ -41,6 +47,8 @@ public abstract class BasicFxApplication extends Application {
         afterStart(stage);
 
     }
+
+
 
     protected Parent loadMainView(BaseTrajSuiteProgram program, Stage primaryStage) throws IOException {
         //call fxml

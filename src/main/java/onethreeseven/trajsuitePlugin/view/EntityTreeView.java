@@ -86,6 +86,11 @@ class EntityTreeView extends TreeView<ItemStateWidget> {
     private void onEntitiesAdded(AddEntitiesTransaction transaction){
         Platform.runLater(()->{
 
+            //collapse all nodes
+            for (TreeItem<ItemStateWidget> layerItem : getRoot().getChildren()) {
+                layerItem.expandedProperty().setValue(false);
+            }
+
             Map<String, TreeItem<ItemStateWidget>> existingLayerItems = makeTreeLayerMap();
 
             Layers layers = BaseTrajSuiteProgram.getInstance().getLayers();
