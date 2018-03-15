@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -29,6 +30,17 @@ public final class ViewUtil {
 
     private static Stage layerStage = null;
 
+    public static void loadUtilityView(Stage primaryStage, String title, Parent viewParent){
+        Stage stage = new Stage();
+        stage.initModality(Modality.NONE);
+        //stage.setAlwaysOnTop(true);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setTitle(title);
+        stage.setScene(new Scene(viewParent));
+        stage.initOwner(primaryStage);
+        stage.show();
+    }
+
     public static void loadUtilityView(Class callerViewClass, Stage primaryStage, String title, String fxmlFile){
         URL res = callerViewClass.getResource(fxmlFile);
 
@@ -37,19 +49,9 @@ public final class ViewUtil {
         }
 
         try {
-
             FXMLLoader loader = new FXMLLoader(res);
-
             Parent view = loader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.NONE);
-            //stage.setAlwaysOnTop(true);
-            stage.initStyle(StageStyle.UTILITY);
-            stage.setTitle(title);
-            stage.setScene(new Scene(view));
-            stage.initOwner(primaryStage);
-            stage.show();
-
+            loadUtilityView(primaryStage, title, view);
         } catch (IOException e) {
             e.printStackTrace();
         }
