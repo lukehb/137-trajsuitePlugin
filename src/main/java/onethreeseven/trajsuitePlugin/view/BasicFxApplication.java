@@ -64,6 +64,7 @@ public abstract class BasicFxApplication extends Application {
             throw new IllegalStateException("Could not get the MainView.fxml resource, for some reason it was null.");
         }
 
+
         FXMLLoader loader = new FXMLLoader(fxmlView);
 
         //init view controller with data it needs
