@@ -23,6 +23,7 @@ public abstract class GraphicsPayload {
     public final ObjectProperty<Color> fallbackColor;
     public final ObservableList<GraphicsPrefab> additionalPrefabs;
     public final ReadOnlyObjectProperty<RenderingModes> renderingMode;
+    public final BooleanProperty renderBehind;
 
     private final ReadOnlyObjectWrapper<RenderingModes> renderingModeInternal;
     private final RenderingModes[] acceptedRenderingModes;
@@ -37,6 +38,7 @@ public abstract class GraphicsPayload {
         this.renderingModeInternal = new ReadOnlyObjectWrapper<>(defaultRenderingMode());
         this.renderingMode = this.renderingModeInternal.getReadOnlyProperty();
         this.acceptedRenderingModes = getAcceptedRenderingModes();
+        this.renderBehind = new ReadOnlyBooleanWrapper(false);
         this.additionalPrefabs = FXCollections.observableArrayList();
     }
 
@@ -58,8 +60,6 @@ public abstract class GraphicsPayload {
                 " was not one of the accetped rendering modes: " +
                 Arrays.toString(acceptedRenderingModes));
     }
-
-
 
     /**
      * If true, then {@link GraphicsPayload#onViewportChanged(LatLonBounds)} is called every time

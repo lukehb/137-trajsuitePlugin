@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import onethreeseven.trajsuitePlugin.model.Layers;
@@ -65,6 +66,11 @@ public final class ViewUtil {
 
                 final int prefWidth = 300;
                 final int prefHeight = 600;
+                double halfScreen = Screen.getPrimary().getVisualBounds().getHeight() * 0.5;
+
+                layerStage.setY(halfScreen - (prefHeight * 0.5));
+
+
 
                 //put layers in scroll pane
                 //ScrollPane layersViewParent = new ScrollPane();
